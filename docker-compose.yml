@@ -1,0 +1,171 @@
+networks:
+  microservices-network:
+    driver: bridge
+
+services:
+  # UserService
+  user-api:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile.dev
+    container_name: user-api-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./UserService/app:/app
+      - /app/node_modules
+    env_file:
+      - ./UserService/.env
+    depends_on:
+      - user-db
+    networks:
+      - microservices-network
+    environment:
+      - DB_HOST=user-db
+
+  user-db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: user-mysql-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: user_root_password
+      MYSQL_DATABASE: user_database
+      MYSQL_USER: user_db_user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - user_mysql_data:/var/lib/mysql
+    networks:
+      - microservices-network
+
+  user-phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    container_name: user-phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: user-db
+      PMA_USER: root
+      PMA_PASSWORD: user_root_password
+    ports:
+      - "8083:80"
+    depends_on:
+      - user-db
+    networks:
+      - microservices-network
+
+  # CartService
+  cart-api:
+    build:
+      context: ./CartService
+      dockerfile: Dockerfile.dev
+    container_name: cart-api-dev
+    volumes:
+      - ./CartService/app:/app
+    environment:
+      - FLASK_ENV=development
+      - DB_HOST=cart-db
+      - DB_USER=root
+      - DB_PASSWORD=cart_root_password
+      - DB_NAME=cart_database
+    ports:
+      - "5001:5000"
+    depends_on:
+      - cart-db
+    networks:
+      - microservices-network
+
+  cart-db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: cart-mysql-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: cart_root_password
+      MYSQL_DATABASE: cart_database
+      MYSQL_USER: cart_dev
+      MYSQL_PASSWORD: cart_dev_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - cart_mysql_data:/var/lib/mysql
+    networks:
+      - microservices-network
+
+  cart-phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    container_name: cart-phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: cart-db
+      PMA_USER: root
+      PMA_PASSWORD: cart_root_password
+    ports:
+      - "8082:80"
+    depends_on:
+      - cart-db
+    networks:
+      - microservices-network
+
+  # OrderService
+  order-api:
+    build:
+      context: ./OrderService
+      dockerfile: Dockerfile.dev
+    container_name: order-api-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./OrderService/src:/app/src
+      - ./OrderService/pom.xml:/app/pom.xml
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DB_HOST=order-db
+      - DB_USER=order_db_user
+      - DB_PASSWORD=order_password
+      - DB_NAME=order_database
+    depends_on:
+      - order-db
+    networks:
+      - microservices-network
+
+  order-db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: order-mysql-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: order_root_password
+      MYSQL_DATABASE: order_database
+      MYSQL_USER: order_db_user
+      MYSQL_PASSWORD: order_password
+    ports:
+      - "3309:3306"
+    volumes:
+      - order_mysql_data:/var/lib/mysql
+    networks:
+      - microservices-network
+
+  order-phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    container_name: order-phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: order-db
+      PMA_USER: root
+      PMA_PASSWORD: order_root_password
+    ports:
+      - "8084:80"
+    depends_on:
+      - order-db
+    networks:
+      - microservices-network
+
+volumes:
+  user_mysql_data:
+  cart_mysql_data:
+  order_mysql_data:
