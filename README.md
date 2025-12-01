@@ -263,7 +263,7 @@ microservices/
 
 **Jalon 6** : 04/01/2026 -> Présentation finie (slides) + document des justifications + architecture.
 
-**Deadline fixée** : 15/12/2026 -> Présentation finale.
+**Deadline fixée** : 15/01/2026 -> Présentation finale.
 
 ## Notes Techniques
 
