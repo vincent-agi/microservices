@@ -23,7 +23,10 @@ help: ## Affiche cette aide
 
 start: ## Démarre tous les microservices
 	@echo "$(GREEN)🚀 Démarrage de tous les microservices...$(NC)"
-	docker-compose up -d
+	cd CartService && docker-compose up -d --build
+	cd ../OrderService && docker-compose up -d --build
+	cd ../UserService && docker-compose up -d --build
+	cd ..
 	@echo "$(GREEN)✅ Tous les services sont démarrés!$(NC)"
 
 stop: ## Arrête tous les microservices

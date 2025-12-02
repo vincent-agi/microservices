@@ -6,7 +6,10 @@
 case "$1" in
     start)
         echo "Démarrage de tous les microservices..."
-        docker-compose up -d --build
+        cd CartService && docker-compose up -d --build
+        cd ../OrderService && docker-compose up -d --build
+        cd ../UserService && docker-compose up -d --build
+        cd ..
         echo "Tous les services sont démarrés!"
         echo ""
         echo "📍 URLs d'accès:"
