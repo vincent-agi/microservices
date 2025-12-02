@@ -2,7 +2,7 @@
 
 > IMPORTANT : A consulter
 
-**Jalon 1** : 30/11/2025 -> L'architecture Docker doit être prête.
+**Jalon 1** : 30/11/2025 -> L'architecture Docker doit être prête. [DONE]
 
 **Jalon 2** : 07/12/2025 -> Toutes les équipes doivent etre en mesure de lancer son microservice et de travailler dessus.
 
