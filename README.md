@@ -1,5 +1,24 @@
 # Projet Microservices - Architecture Distribuée
 
+## Cloner le projet
+
+> Attention il vous faut une clé SSH sur votre compte github pour clone/push/pull
+
+```bash
+git clone git@github.com:vincent-agi/microservices.git
+```
+
+## Quick start
+
+```
+cd microservices
+```
+
+```bash
+# Démarrage de tous les services
+./microservices.sh start
+```
+
 ## Équipes et Attribution des Services
 
 ### Services Métier
