@@ -33,6 +33,8 @@ services:
       - "5001:5020"
     networks:
       - microservices-network
+    depends_on:
+      - cart-db
 
   # OrderService
   order-api:
