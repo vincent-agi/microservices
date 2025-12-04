@@ -30,13 +30,7 @@ services:
     env_file:
       - ./CartService/.env
     ports:
-      - "5001:5000"
-    networks:
-      - microservices-network
-    ports:
-      - "3307:3306"
-    volumes:
-      - cart_mysql_data:/var/lib/mysql
+      - "5001:5020"
     networks:
       - microservices-network
 
@@ -53,6 +47,107 @@ services:
       - ./OrderService/pom.xml:/app/pom.xml
     env_file:
       - ./OrderService/.env
+    depends_on:
+      - order-db
+    networks:
+      - microservices-network
+
+  # User Database
+  user-db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: user-mysql-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: user_root_password
+      MYSQL_DATABASE: user_database
+      MYSQL_USER: user_db_user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - user_mysql_data:/var/lib/mysql
+    networks:
+      - microservices-network
+
+  user-phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    platform: linux/amd64
+    container_name: user-phpmyadmin
+    environment:
+      PMA_HOST: user-db
+      PMA_USER: root
+      PMA_PASSWORD: user_root_password
+    ports:
+      - "8083:80"
+    depends_on:
+      - user-db
+    networks:
+      - microservices-network
+
+  # Cart Database
+  cart-db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: cart-mysql-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: cart_root_password
+      MYSQL_DATABASE: cart_database
+      MYSQL_USER: cart_db_user
+      MYSQL_PASSWORD: cart_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - cart_mysql_data:/var/lib/mysql
+    networks:
+      - microservices-network
+
+  cart-phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    platform: linux/amd64
+    container_name: cart-phpmyadmin
+    environment:
+      PMA_HOST: cart-db
+      PMA_USER: root
+      PMA_PASSWORD: cart_root_password
+    ports:
+      - "8082:80"
+    depends_on:
+      - cart-db
+    networks:
+      - microservices-network
+
+  # Order Database
+  order-db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: order-mysql-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: order_root_password
+      MYSQL_DATABASE: order_database
+      MYSQL_USER: order_db_user
+      MYSQL_PASSWORD: order_password
+    ports:
+      - "3309:3306"
+    volumes:
+      - order_mysql_data:/var/lib/mysql
+    networks:
+      - microservices-network
+
+  order-phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    platform: linux/amd64
+    container_name: order-phpmyadmin
+    environment:
+      PMA_HOST: order-db
+      PMA_USER: root
+      PMA_PASSWORD: order_root_password
+    ports:
+      - "8084:80"
+    depends_on:
+      - order-db
     networks:
       - microservices-network
 
