@@ -106,7 +106,7 @@ Le projet inclut un système de déploiement centralisé permettant de gérer to
 Tous les services sont connectés au réseau Docker `microservices-network`, permettant la communication directe entre services :
 
 - **UserService** accessible via : `http://user-api:3000`
-- **CartService** accessible via : `http://cart-api:5000`
+- **CartService** accessible via : `http://cart-api:5020`
 - **OrderService** accessible via : `http://order-api:8080`
 
 ### Déploiement Individuel (Pour Développement)
@@ -192,7 +192,7 @@ SPRING_PROFILES_ACTIVE=dev
 
 ```javascript
 // Depuis UserService, appeler CartService
-const cartResponse = await fetch('http://cart-api:5000/api/cart/user/123');
+const cartResponse = await fetch('http://cart-api:5020/api/cart/user/123');
 
 // Depuis CartService, appeler OrderService  
 const orderResponse = await fetch('http://order-api:8080/api/orders');
@@ -214,6 +214,13 @@ microservices/
 └── OrderService/
     ├── docker-compose.yml     # Config individuelle
     └── .env                   # Variables d'environnement
+```
+
+## Problème de cache Docker
+
+Si vous rencontrez des problèmes de build ou de dépendances, vous pouvez nettoyer le cache Docker avec la commande suivante :
+```bash
+docker system prune -a
 ```
 
 ## Planning
