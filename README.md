@@ -218,6 +218,7 @@ microservices/
 
 ## Problème de cache Docker
 
+Si vous rencontrez des problèmes de build ou de dépendances, vous pouvez nettoyer le cache Docker avec la commande suivante :
 ```bash
 docker system prune -a
 ```
