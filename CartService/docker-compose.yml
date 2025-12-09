@@ -13,7 +13,7 @@ services:
       - DB_PASSWORD=root
       - DB_NAME=cart_db
     ports:
-      - "5000:5000"
+      - "5001:5020"
     depends_on:
       - db
 
