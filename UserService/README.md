@@ -100,3 +100,45 @@ Si vous voulez changer :
 - l’URL d’une API externe
 
 Modifiez juste le `.env`dans votre microservice, pas le code.
+
+
+## Schéma de la Base de Données du UserService
+
+```mermaid
+erDiagram
+
+    USERS {
+        BIGINT      id
+        VARCHAR(255) email
+        VARCHAR(255) password_hash
+        VARCHAR(100) first_name
+        VARCHAR(100) last_name
+        VARCHAR(20)  phone
+        BOOLEAN      is_active
+        DATETIME     created_at
+        DATETIME     updated_at
+        DATETIME     deleted_at
+    }
+
+    ROLES {
+        BIGINT       id
+        VARCHAR(50)  name
+        VARCHAR(255) description
+        DATETIME     created_at
+        DATETIME     updated_at
+    }
+
+    USER_ROLES {
+        BIGINT       id
+        BIGINT       user_id
+        BIGINT       role_id
+        DATETIME     created_at
+    }
+
+    %% Relations (cardinalités)
+    %% Un utilisateur a 0..N liaisons dans USER_ROLES
+    %% Un rôle a 0..N liaisons dans USER_ROLES
+
+    USERS ||--o{ USER_ROLES : "possède"
+    ROLES ||--o{ USER_ROLES : "est attribué à"
+```
