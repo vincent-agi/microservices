@@ -206,7 +206,7 @@ CREATE TABLE IF NOT EXISTS user_roles (
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
--- Index supplémentaires (optionnel mais recommandé)
+-- Index supplémentaires
 CREATE INDEX idx_user_roles_user_id ON user_roles(user_id);
 CREATE INDEX idx_user_roles_role_id ON user_roles(role_id);
 ```
