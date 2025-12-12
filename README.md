@@ -233,5 +233,6 @@ docker system prune -a
 - **Single Responsibility** : Un micoservice = un groupe de responsabilités métier = une base de données
 - **Database per Service** : Isolation des données (ne pas créer une autre pasde données en plus pour votre microservice)
 - **Documenatation** : Documenter ce que vous faites. C'est très important.
+- **Respecter les standards** : [standardisation_api_rest](./standardisation_api_rest.md)
 
 **Je vous encourage très fortement à mettre en place dès le début un logger dans vos microservices**
