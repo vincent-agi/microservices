@@ -61,10 +61,10 @@ services:
     container_name: user-mysql-dev
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: user_root_password
-      MYSQL_DATABASE: user_database
-      MYSQL_USER: user_db_user
-      MYSQL_PASSWORD: user_password
+      MYSQL_ROOT_PASSWORD: db_user_root_password
+      MYSQL_DATABASE: db_user_database
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: db_user_password
     ports:
       - "3308:3306"
     volumes:
@@ -78,8 +78,8 @@ services:
     container_name: user-phpmyadmin
     environment:
       PMA_HOST: user-db
-      PMA_USER: root
-      PMA_PASSWORD: user_root_password
+      PMA_USER: db_user
+      PMA_PASSWORD: db_user_password
     ports:
       - "8083:80"
     depends_on:
