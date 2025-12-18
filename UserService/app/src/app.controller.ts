@@ -17,6 +17,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { plainToClass } from 'class-transformer';
 import { UserResponseDto } from './dto/user-response.dto';
+import { generateTimestamp } from './utils/helpers';
 
 /**
  * Controller for user management REST API
@@ -41,7 +42,7 @@ export class AppController {
     return {
       data: userResponse,
       meta: {
-        timestamp: Date.now().toString(),
+        timestamp: generateTimestamp(),
       },
     };
   }
@@ -65,7 +66,7 @@ export class AppController {
     return {
       data: usersResponse,
       meta: {
-        timestamp: Date.now().toString(),
+        timestamp: generateTimestamp(),
         page: result.page,
         limit: result.limit,
         total: result.total,
@@ -89,7 +90,7 @@ export class AppController {
     return {
       data: userResponse,
       meta: {
-        timestamp: Date.now().toString(),
+        timestamp: generateTimestamp(),
       },
     };
   }
@@ -113,7 +114,7 @@ export class AppController {
     return {
       data: userResponse,
       meta: {
-        timestamp: Date.now().toString(),
+        timestamp: generateTimestamp(),
       },
     };
   }

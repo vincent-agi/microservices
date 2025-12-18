@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserStatus, booleanToStatus } from './utils/helpers';
 import * as bcrypt from 'bcrypt';
 
 /**
@@ -46,7 +47,7 @@ export class UsersService {
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
       phone: createUserDto.phone,
-      isActive: 1,
+      isActive: UserStatus.ACTIVE,
     });
 
     return await this.userRepository.save(user);
@@ -137,7 +138,7 @@ export class UsersService {
       user.lastName = updateUserDto.lastName;
     if (updateUserDto.phone !== undefined) user.phone = updateUserDto.phone;
     if (updateUserDto.isActive !== undefined)
-      user.isActive = updateUserDto.isActive ? 1 : 0;
+      user.isActive = booleanToStatus(updateUserDto.isActive);
 
     return await this.userRepository.save(user);
   }
