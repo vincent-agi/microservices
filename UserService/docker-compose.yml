@@ -12,9 +12,9 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      - user-db
 
-  db:
+  user-db:
     image: mysql:8.0
     platform: linux/amd64
     container_name: user-mysql-dev
@@ -36,13 +36,12 @@ services:
     container_name: user-phpmyadmin
     restart: always
     environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: ${DB_PASSWORD}
+      PMA_HOST: user-db
+      PMA_PORT: 3306
     ports:
       - "8083:80"
     depends_on:
-      - db
+      - user-db
 
 volumes:
   user_mysql_data:
