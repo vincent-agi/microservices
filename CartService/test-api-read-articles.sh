@@ -8,7 +8,7 @@ echo "========================================================================"
 echo ""
 
 # GET all articles (page 1, limit 20 par défaut)
-curl -X GET http://localhost:5001/articles | jq '.'
+curl -X GET http://localhost:5001/articles
 
 echo ""
 echo "==========================================="
@@ -19,7 +19,7 @@ echo "🔵 Test: Récupération avec pagination personnalisée (page 1, limit 5)
 echo "====================================================================="
 echo ""
 
-curl -X GET "http://localhost:5001/articles?page=1&limit=5" | jq '.'
+curl -X GET "http://localhost:5001/articles?page=1&limit=5"
 
 echo ""
 echo "==========================================="
@@ -30,7 +30,7 @@ echo "🔵 Test: Récupération de la page 2"
 echo "================================="
 echo ""
 
-curl -X GET "http://localhost:5001/articles?page=2&limit=5" | jq '.'
+curl -X GET "http://localhost:5001/articles?page=2&limit=5"
 
 echo ""
 echo "==========================================="
@@ -41,7 +41,7 @@ echo "🔵 Test: Récupération des articles d'un panier (panierId=1)"
 echo "==========================================================="
 echo ""
 
-curl -X GET "http://localhost:5001/articles?panierId=1" | jq '.'
+curl -X GET "http://localhost:5001/articles?panierId=1"
 
 echo ""
 echo "==========================================="
@@ -52,7 +52,7 @@ echo "🔵 Test: Récupération d'un article par ID (ID=1)"
 echo "================================================"
 echo ""
 
-curl -X GET http://localhost:5001/articles/1 | jq '.'
+curl -X GET http://localhost:5001/articles/1 
 
 echo ""
 echo "==========================================="
@@ -63,7 +63,7 @@ echo "🔵 Test: Récupération d'un article inexistant (ID=9999) - doit échoue
 echo "======================================================================"
 echo ""
 
-curl -X GET http://localhost:5001/articles/9999 | jq '.'
+curl -X GET http://localhost:5001/articles/9999
 
 echo ""
 echo "==========================================="
@@ -74,7 +74,7 @@ echo "🔵 Test: Récupération via endpoint /articles/panier/{panierId}"
 echo "=============================================================="
 echo ""
 
-curl -X GET http://localhost:5001/articles/panier/1 | jq '.'
+curl -X GET http://localhost:5001/articles/panier/1
 
 echo ""
 echo "==========================================="
@@ -85,6 +85,6 @@ echo "🔵 Test: Articles d'un panier avec pagination"
 echo "============================================="
 echo ""
 
-curl -X GET "http://localhost:5001/articles/panier/1?page=1&limit=2" | jq '.'
+curl -X GET "http://localhost:5001/articles/panier/1?page=1&limit=2"
 
 echo ""
