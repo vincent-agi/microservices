@@ -18,6 +18,9 @@ services:
       - ./UserService/.env
     networks:
       - microservices-network
+    depends_on:
+      user-db:
+        condition: service_healthy
 
   # CartService
   cart-api:
