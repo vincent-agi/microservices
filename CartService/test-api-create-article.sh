@@ -15,7 +15,7 @@ curl -X POST http://localhost:5001/articles \
     "productId": "PROD-123",
     "quantity": 2,
     "unitPrice": 29.99
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -33,7 +33,7 @@ curl -X POST http://localhost:5001/articles \
     "productId": "PROD-456",
     "quantity": 1,
     "unitPrice": 49.99
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -51,7 +51,7 @@ curl -X POST http://localhost:5001/articles \
     "productId": "PROD-789",
     "quantity": 5,
     "unitPrice": 12.50
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -69,7 +69,7 @@ curl -X POST http://localhost:5001/articles \
     "productId": "PROD-999",
     "quantity": 1,
     "unitPrice": 10.00
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -87,7 +87,7 @@ curl -X POST http://localhost:5001/articles \
     "productId": "PROD-000",
     "quantity": 0,
     "unitPrice": 10.00
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -105,6 +105,6 @@ curl -X POST http://localhost:5001/articles \
     "productId": "PROD-NEG",
     "quantity": 1,
     "unitPrice": -5.00
-  }' | jq '.'
+  }'
 
 echo ""
