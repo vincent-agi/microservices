@@ -15,6 +15,12 @@ def verify_user_exists(user_id):
     Returns:
         Tuple of (exists: bool, error_message: str or None)
     """
+    # Validate user_id is an integer
+    try:
+        user_id = int(user_id)
+    except (ValueError, TypeError):
+        return False, "Invalid user ID format"
+    
     # Get UserService URL from environment or use default
     user_service_url = os.getenv('USER_SERVICE_URL', 'http://user-api:3000')
     

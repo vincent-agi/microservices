@@ -7,6 +7,9 @@ from controllers.article_controller import article_bp
 
 app = Flask(__name__)
 
+# Flag to track database initialization
+app.db_initialized = False
+
 
 # Register blueprints
 app.register_blueprint(panier_bp)
@@ -19,7 +22,7 @@ def initialize_database():
     Initialize database tables on first request.
     This is deferred to avoid connection errors when DB is not available at startup.
     """
-    if not hasattr(app, 'db_initialized'):
+    if not app.db_initialized:
         try:
             from config.database import init_db
             init_db()

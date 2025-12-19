@@ -39,8 +39,8 @@ class Panier(Base):
         """
         return {
             'idPanier': self.id_panier,
-            'dateCreation': self.date_creation.isoformat() if self.date_creation else None,
-            'dateModification': self.date_modification.isoformat() if self.date_modification else None,
+            'dateCreation': self.date_creation.isoformat() + 'Z' if self.date_creation else None,
+            'dateModification': self.date_modification.isoformat() + 'Z' if self.date_modification else None,
             'status': self.status,
             'userId': self.user_id,
         }

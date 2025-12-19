@@ -28,7 +28,7 @@ class Article(Base):
     product_id = Column(String(255), nullable=False)
     quantity = Column(Integer, nullable=False)
     unit_price = Column(DECIMAL(10, 2), nullable=False)
-    total_line = Column(DECIMAL(10, 2), Computed('(quantity * unit_price)'))
+    total_line = Column(DECIMAL(10, 2), Computed('(quantity * unit_price)', persisted=True))
     created_at = Column(DateTime, default=func.current_timestamp())
     
     # Relationship with panier
@@ -48,5 +48,5 @@ class Article(Base):
             'quantity': self.quantity,
             'unitPrice': float(self.unit_price) if self.unit_price else 0.0,
             'totalLine': float(self.total_line) if self.total_line else 0.0,
-            'createdAt': self.created_at.isoformat() if self.created_at else None,
+            'createdAt': self.created_at.isoformat() + 'Z' if self.created_at else None,
         }

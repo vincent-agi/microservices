@@ -18,7 +18,7 @@ def success_response(data, status_code=200, **meta_extra):
         Flask response with standardized format
     """
     meta = {
-        'timestamp': str(int(time.time() * 1000))
+        'timestamp': int(time.time() * 1000)
     }
     meta.update(meta_extra)
     

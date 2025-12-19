@@ -6,7 +6,7 @@ from sqlalchemy import func
 from models.panier import Panier
 from models.article import Article
 from utils.responses import paginate_query
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class PanierService:
@@ -107,7 +107,7 @@ class PanierService:
         if status is not None:
             panier.status = status
         
-        panier.date_modification = datetime.utcnow()
+        panier.date_modification = datetime.now(timezone.utc)
         
         self.db.commit()
         self.db.refresh(panier)
