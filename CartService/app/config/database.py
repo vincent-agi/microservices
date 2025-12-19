@@ -11,7 +11,9 @@ load_dotenv()
 # Database configuration
 DB_HOST = os.getenv('DB_HOST', 'db')
 DB_USER = os.getenv('DB_USER', 'root')
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'root')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+if not DB_PASSWORD:
+    raise RuntimeError("Environment variable 'DB_PASSWORD' must be set and non-empty for database access.")
 DB_NAME = os.getenv('DB_NAME', 'cart_db')
 
 # Create database URL
