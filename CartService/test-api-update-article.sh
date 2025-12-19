@@ -15,7 +15,7 @@ curl -X PUT http://localhost:5001/articles/$ARTICLE_ID \
   -H "Content-Type: application/json" \
   -d '{
     "quantity": 5
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -30,7 +30,7 @@ curl -X PUT http://localhost:5001/articles/$ARTICLE_ID \
   -H "Content-Type: application/json" \
   -d '{
     "unitPrice": 24.99
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -45,7 +45,7 @@ curl -X PUT http://localhost:5001/articles/$ARTICLE_ID \
   -H "Content-Type: application/json" \
   -d '{
     "productId": "PROD-999"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -61,7 +61,7 @@ curl -X PUT http://localhost:5001/articles/$ARTICLE_ID \
   -d '{
     "quantity": 3,
     "unitPrice": 19.99
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -76,7 +76,7 @@ curl -X PUT http://localhost:5001/articles/$ARTICLE_ID \
   -H "Content-Type: application/json" \
   -d '{
     "quantity": 0
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -91,7 +91,7 @@ curl -X PUT http://localhost:5001/articles/$ARTICLE_ID \
   -H "Content-Type: application/json" \
   -d '{
     "unitPrice": -10.00
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -106,6 +106,6 @@ curl -X PUT http://localhost:5001/articles/9999 \
   -H "Content-Type: application/json" \
   -d '{
     "quantity": 1
-  }' | jq '.'
+  }'
 
 echo ""
