@@ -4,11 +4,9 @@ CartService - Flask REST API for shopping cart management.
 from flask import Flask
 from controllers.panier_controller import panier_bp
 from controllers.article_controller import article_bp
+import atexit
 
 app = Flask(__name__)
-
-# Flag to track database initialization
-app.db_initialized = False
 
 
 # Register blueprints
@@ -16,20 +14,24 @@ app.register_blueprint(panier_bp)
 app.register_blueprint(article_bp)
 
 
-@app.before_request
-def initialize_database():
+def init_app_db():
     """
-    Initialize database tables on first request.
-    This is deferred to avoid connection errors when DB is not available at startup.
+    Initialize database at application startup.
+    Only called once during app initialization.
     """
-    if not app.db_initialized:
-        try:
-            from config.database import init_db
-            init_db()
-            app.db_initialized = True
-        except Exception as e:
-            # Log error but don't crash the app
-            print(f"Warning: Could not initialize database: {e}")
+    try:
+        from config.database import init_db
+        init_db()
+        print("Database initialized successfully")
+    except Exception as e:
+        # Log error and raise to prevent app from starting with bad DB config
+        print(f"Critical error: Could not initialize database: {e}")
+        raise
+
+
+# Initialize database once at startup
+with app.app_context():
+    init_app_db()
 
 
 @app.route("/hello")

@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, DateTime, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from config.database import Base
+from datetime import timezone
 
 
 class Panier(Base):
@@ -23,7 +24,7 @@ class Panier(Base):
 
     id_panier = Column(Integer, primary_key=True, autoincrement=True)
     date_creation = Column(DateTime, default=func.current_timestamp())
-    date_modification = Column(DateTime, onupdate=func.current_timestamp(), nullable=True)
+    date_modification = Column(DateTime, server_onupdate=func.current_timestamp(), nullable=True)
     status = Column(String(50), nullable=True)
     user_id = Column(Integer, nullable=True)
     
@@ -37,10 +38,27 @@ class Panier(Base):
         Returns:
             Dictionary representation of the Panier
         """
+        # Ensure datetime is timezone-aware UTC before serialization
+        date_creation_str = None
+        if self.date_creation:
+            if self.date_creation.tzinfo is None:
+                # Assume naive datetime is UTC
+                date_creation_str = self.date_creation.isoformat() + 'Z'
+            else:
+                date_creation_str = self.date_creation.astimezone(timezone.utc).isoformat()
+        
+        date_modification_str = None
+        if self.date_modification:
+            if self.date_modification.tzinfo is None:
+                # Assume naive datetime is UTC
+                date_modification_str = self.date_modification.isoformat() + 'Z'
+            else:
+                date_modification_str = self.date_modification.astimezone(timezone.utc).isoformat()
+        
         return {
             'idPanier': self.id_panier,
-            'dateCreation': self.date_creation.isoformat() + 'Z' if self.date_creation else None,
-            'dateModification': self.date_modification.isoformat() + 'Z' if self.date_modification else None,
+            'dateCreation': date_creation_str,
+            'dateModification': date_modification_str,
             'status': self.status,
             'userId': self.user_id,
         }

@@ -6,6 +6,7 @@ from config.database import get_db
 from services.article_service import ArticleService
 from utils.responses import success_response, error_response
 from utils.validation import validate_pagination_params, validate_required_fields
+from sqlalchemy.exc import SQLAlchemyError
 
 article_bp = Blueprint('article', __name__, url_prefix='/articles')
 
@@ -79,6 +80,13 @@ def create_article():
             )
         
         return success_response(article.to_dict(), status_code=201)
+    except SQLAlchemyError as e:
+        return error_response(
+            'DATABASE_ERROR',
+            'An error occurred while creating the article',
+            {'error': str(e)},
+            500
+        )
     finally:
         db.close()
 
@@ -236,6 +244,13 @@ def update_article(article_id):
             )
         
         return success_response(article.to_dict())
+    except SQLAlchemyError as e:
+        return error_response(
+            'DATABASE_ERROR',
+            'An error occurred while updating the article',
+            {'error': str(e)},
+            500
+        )
     finally:
         db.close()
 

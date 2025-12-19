@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, C
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from config.database import Base
+from datetime import timezone
 
 
 class Article(Base):
@@ -41,6 +42,15 @@ class Article(Base):
         Returns:
             Dictionary representation of the Article
         """
+        # Ensure datetime is timezone-aware UTC before serialization
+        created_at_str = None
+        if self.created_at:
+            if self.created_at.tzinfo is None:
+                # Assume naive datetime is UTC
+                created_at_str = self.created_at.isoformat() + 'Z'
+            else:
+                created_at_str = self.created_at.astimezone(timezone.utc).isoformat()
+        
         return {
             'idArticle': self.id_article,
             'panierId': self.panier_id,
@@ -48,5 +58,5 @@ class Article(Base):
             'quantity': self.quantity,
             'unitPrice': float(self.unit_price) if self.unit_price else 0.0,
             'totalLine': float(self.total_line) if self.total_line else 0.0,
-            'createdAt': self.created_at.isoformat() + 'Z' if self.created_at else None,
+            'createdAt': created_at_str,
         }

@@ -5,8 +5,9 @@ from flask import Blueprint, request
 from config.database import get_db
 from services.panier_service import PanierService
 from utils.responses import success_response, error_response
-from utils.validation import validate_pagination_params
+from utils.validation import validate_pagination_params, validate_panier_status, VALID_PANIER_STATUS
 from utils.user_service import verify_user_exists
+from sqlalchemy.exc import SQLAlchemyError
 
 panier_bp = Blueprint('panier', __name__, url_prefix='/paniers')
 
@@ -29,6 +30,14 @@ def create_panier():
     user_id = data.get('userId')
     status = data.get('status', 'active')
     
+    # Validate status
+    if not validate_panier_status(status):
+        return error_response(
+            'VALIDATION_ERROR',
+            f'Invalid status. Must be one of: {", ".join(VALID_PANIER_STATUS)}',
+            {'field': 'status', 'allowedValues': VALID_PANIER_STATUS}
+        )
+    
     # Verify user exists if user_id is provided
     if user_id is not None:
         user_exists, error_msg = verify_user_exists(user_id)
@@ -46,6 +55,13 @@ def create_panier():
         panier = service.create_panier(user_id=user_id, status=status)
         
         return success_response(panier.to_dict(), status_code=201)
+    except SQLAlchemyError as e:
+        return error_response(
+            'DATABASE_ERROR',
+            'An error occurred while creating the panier',
+            {'error': str(e)},
+            500
+        )
     finally:
         db.close()
 
@@ -154,6 +170,14 @@ def update_panier(panier_id):
     user_id = data.get('userId')
     status = data.get('status')
     
+    # Validate status if provided
+    if status is not None and not validate_panier_status(status):
+        return error_response(
+            'VALIDATION_ERROR',
+            f'Invalid status. Must be one of: {", ".join(VALID_PANIER_STATUS)}',
+            {'field': 'status', 'allowedValues': VALID_PANIER_STATUS}
+        )
+    
     # Verify user exists if user_id is provided
     if user_id is not None:
         user_exists, error_msg = verify_user_exists(user_id)
@@ -179,6 +203,13 @@ def update_panier(panier_id):
             )
         
         return success_response(panier.to_dict())
+    except SQLAlchemyError as e:
+        return error_response(
+            'DATABASE_ERROR',
+            'An error occurred while updating the panier',
+            {'error': str(e)},
+            500
+        )
     finally:
         db.close()
 
