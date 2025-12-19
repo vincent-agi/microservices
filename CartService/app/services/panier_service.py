@@ -107,7 +107,7 @@ class PanierService:
         if status is not None:
             panier.status = status
         
-        panier.date_modification = datetime.now(timezone.utc)
+        # The date_modification will be updated automatically by onupdate trigger
         
         self.db.commit()
         self.db.refresh(panier)
