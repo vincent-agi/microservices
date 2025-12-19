@@ -16,7 +16,7 @@ curl -X PUT http://localhost:3000/users/$USER_ID \
   -d '{
     "firstName": "Jean",
     "lastName": "Dupont"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -31,7 +31,7 @@ curl -X PUT http://localhost:3000/users/$USER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "email": "jean.dupont@example.com"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -46,7 +46,7 @@ curl -X PUT http://localhost:3000/users/$USER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "phone": "+33698765432"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -61,7 +61,7 @@ curl -X PUT http://localhost:3000/users/$USER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "isActive": false
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -76,7 +76,7 @@ curl -X PUT http://localhost:3000/users/$USER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "isActive": true
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -91,6 +91,6 @@ curl -X PUT http://localhost:3000/users/$USER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "password": "NewSecurePassword456"
-  }' | jq '.'
+  }'
 
 echo ""
