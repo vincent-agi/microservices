@@ -5,7 +5,7 @@ from flask import Blueprint, request
 from config.database import get_db
 from services.panier_service import PanierService
 from utils.responses import success_response, error_response
-from utils.validation import validate_pagination_params, validate_required_fields
+from utils.validation import validate_pagination_params
 from utils.user_service import verify_user_exists
 
 panier_bp = Blueprint('panier', __name__, url_prefix='/paniers')
