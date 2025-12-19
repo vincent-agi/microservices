@@ -13,7 +13,7 @@ curl -X POST http://localhost:5001/paniers \
   -d '{
     "userId": 1,
     "status": "active"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -28,7 +28,7 @@ curl -X POST http://localhost:5001/paniers \
   -H "Content-Type: application/json" \
   -d '{
     "status": "active"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -44,7 +44,7 @@ curl -X POST http://localhost:5001/paniers \
   -d '{
     "userId": 1,
     "status": "completed"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -60,6 +60,6 @@ curl -X POST http://localhost:5001/paniers \
   -d '{
     "userId": 9999,
     "status": "active"
-  }' | jq '.'
+  }'
 
 echo ""
