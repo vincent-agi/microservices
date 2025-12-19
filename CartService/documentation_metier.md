@@ -87,7 +87,7 @@ Crée un nouveau panier d'achat.
     "userId": 1
   },
   "meta": {
-    "timestamp": "1734602400000"
+    "timestamp": 1734602400000
   }
 }
 ```
