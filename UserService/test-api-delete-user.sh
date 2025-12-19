@@ -11,7 +11,7 @@ echo "====================================================================="
 echo ""
 
 # Afficher l'utilisateur avant suppression
-curl -X GET http://localhost:3000/users/$USER_ID | jq '.'
+curl -X GET http://localhost:3000/users/$USER_ID
 
 echo ""
 echo "==========================================="
@@ -34,7 +34,7 @@ echo "🔵 Test: Vérification après suppression (doit retourner 404)"
 echo "==========================================================="
 echo ""
 
-curl -X GET http://localhost:3000/users/$USER_ID | jq '.'
+curl -X GET http://localhost:3000/users/$USER_ID
 
 echo ""
 echo "==========================================="
@@ -46,6 +46,6 @@ echo "==========================================================================
 echo ""
 
 curl -X DELETE http://localhost:3000/users/$USER_ID \
-  -w "\nHTTP Status: %{http_code}\n" | jq '.'
+  -w "\nHTTP Status: %{http_code}\n"
 
 echo ""
