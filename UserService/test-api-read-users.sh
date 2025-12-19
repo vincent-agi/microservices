@@ -8,7 +8,7 @@ echo "==========================================================================
 echo ""
 
 # GET all users (page 1, limit 20 par défaut)
-curl -X GET http://localhost:3000/users | jq '.'
+curl -X GET http://localhost:3000/users
 
 echo ""
 echo "==========================================="
@@ -19,7 +19,7 @@ echo "🔵 Test: Récupération avec pagination personnalisée (page 1, limit 5)
 echo "====================================================================="
 echo ""
 
-curl -X GET "http://localhost:3000/users?page=1&limit=5" | jq '.'
+curl -X GET "http://localhost:3000/users?page=1&limit=5"
 
 echo ""
 echo "==========================================="
@@ -30,7 +30,7 @@ echo "🔵 Test: Récupération de la page 2"
 echo "================================="
 echo ""
 
-curl -X GET "http://localhost:3000/users?page=2&limit=5" | jq '.'
+curl -X GET "http://localhost:3000/users?page=2&limit=5"
 
 echo ""
 echo "==========================================="
@@ -41,7 +41,7 @@ echo "🔵 Test: Récupération d'un utilisateur par ID (ID=1)"
 echo "===================================================="
 echo ""
 
-curl -X GET http://localhost:3000/users/1 | jq '.'
+curl -X GET http://localhost:3000/users/1
 
 echo ""
 echo "==========================================="
@@ -52,6 +52,6 @@ echo "🔵 Test: Récupération d'un utilisateur inexistant (ID=9999) - doit éc
 echo "=========================================================================="
 echo ""
 
-curl -X GET http://localhost:3000/users/9999 | jq '.'
+curl -X GET http://localhost:3000/users/9999
 
 echo ""
