@@ -15,7 +15,7 @@ curl -X PUT http://localhost:5001/paniers/$PANIER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "status": "completed"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -30,7 +30,7 @@ curl -X PUT http://localhost:5001/paniers/$PANIER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "userId": 2
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -45,7 +45,7 @@ curl -X PUT http://localhost:5001/paniers/$PANIER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "status": "abandoned"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -61,7 +61,7 @@ curl -X PUT http://localhost:5001/paniers/$PANIER_ID \
   -d '{
     "userId": 1,
     "status": "active"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -76,6 +76,6 @@ curl -X PUT http://localhost:5001/paniers/9999 \
   -H "Content-Type: application/json" \
   -d '{
     "status": "active"
-  }' | jq '.'
+  }'
 
 echo ""
