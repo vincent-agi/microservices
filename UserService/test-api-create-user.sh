@@ -16,7 +16,7 @@ curl -X POST http://localhost:3000/users \
     "firstName": "John",
     "lastName": "Doe",
     "phone": "+33612345678"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -32,7 +32,7 @@ curl -X POST http://localhost:3000/users \
   -d '{
     "email": "jane.smith@example.com",
     "password": "AnotherSecure123"
-  }' | jq '.'
+  }'
 
 echo ""
 echo "==========================================="
@@ -48,6 +48,6 @@ curl -X POST http://localhost:3000/users \
   -d '{
     "email": "john.doe@example.com",
     "password": "SecurePassword123"
-  }' | jq '.'
+  }'
 
 echo ""
