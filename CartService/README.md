@@ -153,7 +153,7 @@ CREATE TABLE `panier` (
   `id_panier` int NOT NULL,
   `date_creation` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `date_modification` timestamp NULL DEFAULT NULL,
-  `status` tinyint(1) DEFAULT NULL,
+  `status` VARCHAR(50) DEFAULT NULL,
   `user_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
