@@ -2,6 +2,7 @@
 Service layer for Panier (Cart) operations.
 """
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from models.panier import Panier
 from utils.responses import paginate_query
 
@@ -30,17 +31,23 @@ class PanierService:
             
         Returns:
             Created Panier entity
+            
+        Raises:
+            SQLAlchemyError: If database operation fails
         """
         panier = Panier(
             user_id=user_id,
             status=status
         )
         
-        self.db.add(panier)
-        self.db.commit()
-        self.db.refresh(panier)
-        
-        return panier
+        try:
+            self.db.add(panier)
+            self.db.commit()
+            self.db.refresh(panier)
+            return panier
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
     
     def get_panier_by_id(self, panier_id):
         """
@@ -92,6 +99,9 @@ class PanierService:
             
         Returns:
             Updated Panier entity or None if not found
+            
+        Raises:
+            SQLAlchemyError: If database operation fails
         """
         panier = self.get_panier_by_id(panier_id)
         
@@ -104,12 +114,15 @@ class PanierService:
         if status is not None:
             panier.status = status
         
-        # The date_modification will be updated automatically by onupdate trigger
+        # The date_modification will be updated automatically by server_onupdate trigger
         
-        self.db.commit()
-        self.db.refresh(panier)
-        
-        return panier
+        try:
+            self.db.commit()
+            self.db.refresh(panier)
+            return panier
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
     
     def delete_panier(self, panier_id):
         """
@@ -120,16 +133,22 @@ class PanierService:
             
         Returns:
             True if deleted, False if not found
+            
+        Raises:
+            SQLAlchemyError: If database operation fails
         """
         panier = self.get_panier_by_id(panier_id)
         
         if not panier:
             return False
         
-        self.db.delete(panier)
-        self.db.commit()
-        
-        return True
+        try:
+            self.db.delete(panier)
+            self.db.commit()
+            return True
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
     
     def get_panier_with_articles(self, panier_id):
         """

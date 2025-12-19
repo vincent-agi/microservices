@@ -2,6 +2,7 @@
 Service layer for Article (Cart Item) operations.
 """
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from models.article import Article
 from models.panier import Panier
 from utils.responses import paginate_query
@@ -33,6 +34,9 @@ class ArticleService:
             
         Returns:
             Created Article entity or None if panier doesn't exist
+            
+        Raises:
+            SQLAlchemyError: If database operation fails
         """
         # Verify panier exists
         panier = self.db.query(Panier).filter(Panier.id_panier == panier_id).first()
@@ -46,11 +50,14 @@ class ArticleService:
             unit_price=unit_price
         )
         
-        self.db.add(article)
-        self.db.commit()
-        self.db.refresh(article)
-        
-        return article
+        try:
+            self.db.add(article)
+            self.db.commit()
+            self.db.refresh(article)
+            return article
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
     
     def get_article_by_id(self, article_id):
         """
@@ -113,6 +120,9 @@ class ArticleService:
             
         Returns:
             Updated Article entity or None if not found
+            
+        Raises:
+            SQLAlchemyError: If database operation fails
         """
         article = self.get_article_by_id(article_id)
         
@@ -128,10 +138,13 @@ class ArticleService:
         if unit_price is not None:
             article.unit_price = unit_price
         
-        self.db.commit()
-        self.db.refresh(article)
-        
-        return article
+        try:
+            self.db.commit()
+            self.db.refresh(article)
+            return article
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
     
     def delete_article(self, article_id):
         """
@@ -142,16 +155,22 @@ class ArticleService:
             
         Returns:
             True if deleted, False if not found
+            
+        Raises:
+            SQLAlchemyError: If database operation fails
         """
         article = self.get_article_by_id(article_id)
         
         if not article:
             return False
         
-        self.db.delete(article)
-        self.db.commit()
-        
-        return True
+        try:
+            self.db.delete(article)
+            self.db.commit()
+            return True
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
     
     def update_article_quantity(self, article_id, quantity):
         """
