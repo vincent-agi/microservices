@@ -18,6 +18,9 @@ services:
       - ./UserService/.env
     networks:
       - microservices-network
+    depends_on:
+      user-db:
+        condition: service_healthy
 
   # CartService
   cart-api:
@@ -34,7 +37,8 @@ services:
     networks:
       - microservices-network
     depends_on:
-      - cart-db
+      cart-db:
+        condition: service_healthy
 
   # OrderService
   order-api:
@@ -50,7 +54,8 @@ services:
     env_file:
       - ./OrderService/.env
     depends_on:
-      - order-db
+      order-db:
+        condition: service_healthy
     networks:
       - microservices-network
 
@@ -71,6 +76,12 @@ services:
       - user_mysql_data:/var/lib/mysql
     networks:
       - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost -u root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   user-phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -104,6 +115,12 @@ services:
       - cart_mysql_data:/var/lib/mysql
     networks:
       - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost -u root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   cart-phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -137,6 +154,12 @@ services:
       - order_mysql_data:/var/lib/mysql
     networks:
       - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost -u root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   order-phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
