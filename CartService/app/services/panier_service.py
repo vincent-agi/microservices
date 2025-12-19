@@ -2,7 +2,6 @@
 Service layer for Panier (Cart) operations.
 """
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 from models.panier import Panier
 from utils.responses import paginate_query
 from datetime import datetime, timezone
