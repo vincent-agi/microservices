@@ -2,7 +2,7 @@
 Controller for Panier (Cart) REST API endpoints.
 """
 from flask import Blueprint, request
-from config.database import get_db
+from config.database import DBSession
 from services.panier_service import PanierService
 from utils.responses import success_response, error_response
 from utils.validation import validate_pagination_params, validate_panier_status, VALID_PANIER_STATUS
@@ -49,21 +49,19 @@ def create_panier():
                 404
             )
     
-    db = next(get_db())
-    try:
-        service = PanierService(db)
-        panier = service.create_panier(user_id=user_id, status=status)
-        
-        return success_response(panier.to_dict(), status_code=201)
-    except SQLAlchemyError as e:
-        return error_response(
-            'DATABASE_ERROR',
-            'An error occurred while creating the panier',
-            {'error': str(e)},
-            500
-        )
-    finally:
-        db.close()
+    with DBSession() as db:
+        try:
+            service = PanierService(db)
+            panier = service.create_panier(user_id=user_id, status=status)
+            
+            return success_response(panier.to_dict(), status_code=201)
+        except SQLAlchemyError as e:
+            return error_response(
+                'DATABASE_ERROR',
+                'An error occurred while creating the panier',
+                {'error': str(e)},
+                500
+            )
 
 
 @panier_bp.route('', methods=['GET'])
@@ -98,8 +96,7 @@ def get_paniers():
         except ValueError:
             return error_response('VALIDATION_ERROR', 'Invalid userId', {'field': 'userId'})
     
-    db = next(get_db())
-    try:
+    with DBSession() as db:
         service = PanierService(db)
         paniers, total, total_pages = service.get_all_paniers(
             page=page,
@@ -115,8 +112,6 @@ def get_paniers():
             total=total,
             totalPages=total_pages
         )
-    finally:
-        db.close()
 
 
 @panier_bp.route('/<int:panier_id>', methods=['GET'])
@@ -131,8 +126,7 @@ def get_panier(panier_id):
         200: Panier with articles and totals
         404: Panier not found
     """
-    db = next(get_db())
-    try:
+    with DBSession() as db:
         service = PanierService(db)
         panier_data = service.get_panier_with_articles(panier_id)
         
@@ -145,8 +139,6 @@ def get_panier(panier_id):
             )
         
         return success_response(panier_data)
-    finally:
-        db.close()
 
 
 @panier_bp.route('/<int:panier_id>', methods=['PUT'])
@@ -189,29 +181,27 @@ def update_panier(panier_id):
                 404
             )
     
-    db = next(get_db())
-    try:
-        service = PanierService(db)
-        panier = service.update_panier(panier_id, user_id=user_id, status=status)
-        
-        if not panier:
+    with DBSession() as db:
+        try:
+            service = PanierService(db)
+            panier = service.update_panier(panier_id, user_id=user_id, status=status)
+            
+            if not panier:
+                return error_response(
+                    'NOT_FOUND',
+                    f'Panier with ID {panier_id} not found',
+                    {},
+                    404
+                )
+            
+            return success_response(panier.to_dict())
+        except SQLAlchemyError as e:
             return error_response(
-                'NOT_FOUND',
-                f'Panier with ID {panier_id} not found',
-                {},
-                404
+                'DATABASE_ERROR',
+                'An error occurred while updating the panier',
+                {'error': str(e)},
+                500
             )
-        
-        return success_response(panier.to_dict())
-    except SQLAlchemyError as e:
-        return error_response(
-            'DATABASE_ERROR',
-            'An error occurred while updating the panier',
-            {'error': str(e)},
-            500
-        )
-    finally:
-        db.close()
 
 
 @panier_bp.route('/<int:panier_id>', methods=['DELETE'])
@@ -226,8 +216,7 @@ def delete_panier(panier_id):
         204: No content (successful deletion)
         404: Panier not found
     """
-    db = next(get_db())
-    try:
+    with DBSession() as db:
         service = PanierService(db)
         deleted = service.delete_panier(panier_id)
         
@@ -240,8 +229,6 @@ def delete_panier(panier_id):
             )
         
         return '', 204
-    finally:
-        db.close()
 
 
 @panier_bp.route('/user/<int:user_id>', methods=['GET'])
@@ -268,8 +255,7 @@ def get_user_paniers(user_id):
     if error:
         return error_response('VALIDATION_ERROR', error, {'field': 'page or limit'})
     
-    db = next(get_db())
-    try:
+    with DBSession() as db:
         service = PanierService(db)
         paniers, total, total_pages = service.get_paniers_by_user(
             user_id=user_id,
@@ -284,5 +270,3 @@ def get_user_paniers(user_id):
             total=total,
             totalPages=total_pages
         )
-    finally:
-        db.close()

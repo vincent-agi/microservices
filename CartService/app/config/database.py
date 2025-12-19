@@ -46,6 +46,24 @@ def get_db():
         db.close()
 
 
+class DBSession:
+    """
+    Context manager for database sessions.
+    Ensures proper session cleanup even in error scenarios.
+    """
+    def __init__(self):
+        self.db = None
+    
+    def __enter__(self):
+        self.db = SessionLocal()
+        return self.db
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.db:
+            self.db.close()
+        return False
+
+
 def init_db():
     """
     Initialize database tables.

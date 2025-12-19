@@ -2,7 +2,7 @@
 Controller for Article (Cart Item) REST API endpoints.
 """
 from flask import Blueprint, request
-from config.database import get_db
+from config.database import DBSession
 from services.article_service import ArticleService
 from utils.responses import success_response, error_response
 from utils.validation import validate_pagination_params, validate_required_fields
@@ -61,34 +61,33 @@ def create_article():
             {}
         )
     
-    db = next(get_db())
-    try:
-        service = ArticleService(db)
-        article = service.create_article(
-            panier_id=panier_id,
-            product_id=product_id,
-            quantity=quantity,
-            unit_price=unit_price
-        )
-        
-        if not article:
-            return error_response(
-                'NOT_FOUND',
-                f'Panier with ID {panier_id} not found',
-                {'field': 'panierId'},
-                404
+    with DBSession() as db:
+        try:
+            service = ArticleService(db)
+            article = service.create_article(
+                panier_id=panier_id,
+                product_id=product_id,
+                quantity=quantity,
+                unit_price=unit_price
             )
-        
-        return success_response(article.to_dict(), status_code=201)
-    except SQLAlchemyError as e:
-        return error_response(
-            'DATABASE_ERROR',
-            'An error occurred while creating the article',
-            {'error': str(e)},
-            500
-        )
-    finally:
-        db.close()
+            
+            if not article:
+                return error_response(
+                    'NOT_FOUND',
+                    f'Panier with ID {panier_id} not found',
+                    {'field': 'panierId'},
+                    404
+                )
+            
+            return success_response(article.to_dict(), status_code=201)
+        except SQLAlchemyError as e:
+            return error_response(
+                'DATABASE_ERROR',
+                'An error occurred while creating the article',
+                {'error': str(e)},
+                500
+            )
+
 
 
 @article_bp.route('', methods=['GET'])
@@ -121,8 +120,7 @@ def get_articles():
         except ValueError:
             return error_response('VALIDATION_ERROR', 'Invalid panierId', {'field': 'panierId'})
     
-    db = next(get_db())
-    try:
+    with DBSession() as db:
         service = ArticleService(db)
         articles, total, total_pages = service.get_all_articles(
             page=page,
@@ -137,8 +135,8 @@ def get_articles():
             total=total,
             totalPages=total_pages
         )
-    finally:
-        db.close()
+
+
 
 
 @article_bp.route('/<int:article_id>', methods=['GET'])
@@ -153,8 +151,7 @@ def get_article(article_id):
         200: Article data
         404: Article not found
     """
-    db = next(get_db())
-    try:
+    with DBSession() as db:
         service = ArticleService(db)
         article = service.get_article_by_id(article_id)
         
@@ -167,8 +164,6 @@ def get_article(article_id):
             )
         
         return success_response(article.to_dict())
-    finally:
-        db.close()
 
 
 @article_bp.route('/<int:article_id>', methods=['PUT'])
@@ -225,34 +220,32 @@ def update_article(article_id):
             {}
         )
     
-    db = next(get_db())
-    try:
-        service = ArticleService(db)
-        article = service.update_article(
-            article_id=article_id,
-            product_id=product_id,
-            quantity=quantity,
-            unit_price=unit_price
-        )
-        
-        if not article:
-            return error_response(
-                'NOT_FOUND',
-                f'Article with ID {article_id} not found',
-                {},
-                404
+    with DBSession() as db:
+        try:
+            service = ArticleService(db)
+            article = service.update_article(
+                article_id=article_id,
+                product_id=product_id,
+                quantity=quantity,
+                unit_price=unit_price
             )
-        
-        return success_response(article.to_dict())
-    except SQLAlchemyError as e:
-        return error_response(
-            'DATABASE_ERROR',
-            'An error occurred while updating the article',
-            {'error': str(e)},
-            500
-        )
-    finally:
-        db.close()
+            
+            if not article:
+                return error_response(
+                    'NOT_FOUND',
+                    f'Article with ID {article_id} not found',
+                    {},
+                    404
+                )
+            
+            return success_response(article.to_dict())
+        except SQLAlchemyError as e:
+            return error_response(
+                'DATABASE_ERROR',
+                'An error occurred while updating the article',
+                {'error': str(e)},
+                500
+            )
 
 
 @article_bp.route('/<int:article_id>', methods=['DELETE'])
@@ -267,8 +260,7 @@ def delete_article(article_id):
         204: No content (successful deletion)
         404: Article not found
     """
-    db = next(get_db())
-    try:
+    with DBSession() as db:
         service = ArticleService(db)
         deleted = service.delete_article(article_id)
         
@@ -281,8 +273,6 @@ def delete_article(article_id):
             )
         
         return '', 204
-    finally:
-        db.close()
 
 
 @article_bp.route('/panier/<int:panier_id>', methods=['GET'])
@@ -309,8 +299,7 @@ def get_panier_articles(panier_id):
     if error:
         return error_response('VALIDATION_ERROR', error, {'field': 'page or limit'})
     
-    db = next(get_db())
-    try:
+    with DBSession() as db:
         service = ArticleService(db)
         articles, total, total_pages = service.get_articles_by_panier(
             panier_id=panier_id,
@@ -325,5 +314,3 @@ def get_panier_articles(panier_id):
             total=total,
             totalPages=total_pages
         )
-    finally:
-        db.close()
