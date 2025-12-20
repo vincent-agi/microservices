@@ -55,10 +55,10 @@ Lien : [http://localhost:8083](http://localhost:8083)
 | Champ        | Valeur |
 | ------------ | ------ |
 | Serveur      | user-db     |
-| Utilisateur  | user_db_user   |
-| Mot de passe | user_password    |
+| Utilisateur  | db_user   |
+| Mot de passe | db_user_password    |
 
-La base `user_database` existe déjà.
+La base `db_user_database` existe déjà.
 
 ## Le code du microservice
 
