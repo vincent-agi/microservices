@@ -16,7 +16,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
     depends_on:
-      - db
+      - order-db
     networks:
       - microservices-network
     labels:
@@ -32,7 +32,7 @@ services:
       - "traefik.http.routers.order-api.middlewares=order-api-stripprefix"
       - "traefik.http.middlewares.order-api-stripprefix.stripprefix.prefixes=/api"
 
-  db:
+  order-db:
     image: mysql:8.0
     platform: linux/amd64
     container_name: order-mysql-dev
@@ -55,13 +55,12 @@ services:
     container_name: order-phpmyadmin
     restart: always
     environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: ${DB_PASSWORD}
+      PMA_HOST: ${DB_HOST}
+      PMA_PORT: 3306
     ports:
       - "8084:80"
     depends_on:
-      - db
+      - order-db
     networks:
       - microservices-network
 
