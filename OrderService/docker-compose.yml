@@ -28,10 +28,9 @@ services:
       - "traefik.http.routers.order-api.service=order-api"
       # Configuration du service
       - "traefik.http.services.order-api.loadbalancer.server.port=8080"
-      # Middleware pour strip prefix si nécessaire
+      # Middleware pour strip prefix /api/orders -> /orders
       - "traefik.http.routers.order-api.middlewares=order-api-stripprefix"
-      - "traefik.http.middlewares.order-api-stripprefix.stripprefix.prefixes=/api/orders"
-      - "traefik.http.middlewares.order-api-stripprefix.stripprefix.forceSlash=false"
+      - "traefik.http.middlewares.order-api-stripprefix.stripprefix.prefixes=/api"
 
   db:
     image: mysql:8.0

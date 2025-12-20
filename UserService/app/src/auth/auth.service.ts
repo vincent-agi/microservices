@@ -4,6 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -17,11 +18,16 @@ import { UserStatus } from '../utils/helpers';
  */
 @Injectable()
 export class AuthService {
+  private readonly saltRounds: number;
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.saltRounds = this.configService.get<number>('BCRYPT_SALT_ROUNDS') || 10;
+  }
 
   /**
    * Register a new user
@@ -39,7 +45,7 @@ export class AuthService {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    const hashedPassword = await bcrypt.hash(registerDto.password, this.saltRounds);
 
     // Create user entity
     const user = this.userRepository.create({

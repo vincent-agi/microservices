@@ -18,16 +18,29 @@ services:
     labels:
       # Activer Traefik pour ce service
       - "traefik.enable=true"
-      # Configuration du routeur HTTP
+      
+      # Router pour /auth (authentification)
+      - "traefik.http.routers.user-auth.rule=Host(`localhost`) && PathPrefix(`/api/auth`)"
+      - "traefik.http.routers.user-auth.entrypoints=web"
+      - "traefik.http.routers.user-auth.service=user-api"
+      - "traefik.http.routers.user-auth.priority=20"
+      
+      # Router pour /users (CRUD utilisateurs)
       - "traefik.http.routers.user-api.rule=Host(`localhost`) && PathPrefix(`/api/users`)"
       - "traefik.http.routers.user-api.entrypoints=web"
       - "traefik.http.routers.user-api.service=user-api"
-      # Configuration du service
+      - "traefik.http.routers.user-api.priority=10"
+      
+      # Configuration du service (unique pour les deux routers)
       - "traefik.http.services.user-api.loadbalancer.server.port=3000"
-      # Middleware pour strip prefix si nécessaire
+      
+      # Middleware pour strip prefix /api/auth -> /auth
+      - "traefik.http.routers.user-auth.middlewares=user-auth-stripprefix"
+      - "traefik.http.middlewares.user-auth-stripprefix.stripprefix.prefixes=/api"
+      
+      # Middleware pour strip prefix /api/users -> /users
       - "traefik.http.routers.user-api.middlewares=user-api-stripprefix"
-      - "traefik.http.middlewares.user-api-stripprefix.stripprefix.prefixes=/api/users"
-      - "traefik.http.middlewares.user-api-stripprefix.stripprefix.forceSlash=false"
+      - "traefik.http.middlewares.user-api-stripprefix.stripprefix.prefixes=/api"
 
   user-db:
     image: mysql:8.0

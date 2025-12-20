@@ -27,10 +27,9 @@ services:
       - "traefik.http.routers.cart-api.service=cart-api"
       # Configuration du service
       - "traefik.http.services.cart-api.loadbalancer.server.port=5020"
-      # Middleware pour strip prefix si nécessaire
+      # Middleware pour strip prefix /api/cart -> /cart
       - "traefik.http.routers.cart-api.middlewares=cart-api-stripprefix"
-      - "traefik.http.middlewares.cart-api-stripprefix.stripprefix.prefixes=/api/cart"
-      - "traefik.http.middlewares.cart-api-stripprefix.stripprefix.forceSlash=false"
+      - "traefik.http.middlewares.cart-api-stripprefix.stripprefix.prefixes=/api"
 
   db:
     image: mysql:8.0

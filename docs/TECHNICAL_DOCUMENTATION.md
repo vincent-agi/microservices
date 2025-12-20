@@ -43,21 +43,22 @@ Authentification requise: admin / admin123
 #### Routage des Microservices
 
 **UserService:**
-- URL externe: `http://localhost/api/users`
+- URL externe (authentification): `http://localhost/api/auth`
+- URL externe (utilisateurs): `http://localhost/api/users`
 - Port interne: 3000
-- Middleware: Strip prefix `/api/users`
+- Middleware: Strip prefix `/api` (pour les deux routes)
 - Service backend: `user-api-dev:3000`
 
 **CartService:**
 - URL externe: `http://localhost/api/cart`
 - Port interne: 5020
-- Middleware: Strip prefix `/api/cart`
+- Middleware: Strip prefix `/api`
 - Service backend: `cart-api-dev:5020`
 
 **OrderService:**
 - URL externe: `http://localhost/api/orders`
 - Port interne: 8080
-- Middleware: Strip prefix `/api/orders`
+- Middleware: Strip prefix `/api`
 - Service backend: `order-api-dev:8080`
 
 ### 2. Architecture Docker

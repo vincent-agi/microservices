@@ -75,7 +75,7 @@ L'architecture adopte le pattern microservices avec :
 
 ### Inscription
 ```bash
-curl -X POST http://localhost/api/users/../auth/register \
+curl -X POST http://localhost/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -87,7 +87,7 @@ curl -X POST http://localhost/api/users/../auth/register \
 
 ### Connexion
 ```bash
-curl -X POST http://localhost/api/users/../auth/login \
+curl -X POST http://localhost/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
