@@ -174,26 +174,43 @@ networks:
 
 Ce tableau centralise tous les points d'accès de l'architecture microservices :
 
+#### APIs via Traefik (Recommandé)
+
 | Composant | Type | URL/Endpoint | Port | Authentification |
 |-----------|------|--------------|------|------------------|
-| **APIs via Traefik (Recommandé)** |
 | UserService Auth | API | http://localhost/api/auth | 80 | - |
 | UserService CRUD | API | http://localhost/api/users | 80 | JWT Bearer Token |
 | CartService | API | http://localhost/api/cart | 80 | - |
 | OrderService | API | http://localhost/api/orders | 80 | - |
-| **APIs en Accès Direct (Développement)** |
+
+#### APIs en Accès Direct (Développement)
+
+| Composant | Type | URL/Endpoint | Port | Authentification |
+|-----------|------|--------------|------|------------------|
 | UserService | API | http://localhost:3000 | 3000 | JWT Bearer Token |
 | CartService | API | http://localhost:5001 | 5001 | - |
 | OrderService | API | http://localhost:8080 | 8080 | - |
-| **Bases de Données MySQL** |
+
+#### Bases de Données MySQL
+
+| Composant | Type | URL/Endpoint | Port | Authentification |
+|-----------|------|--------------|------|------------------|
 | UserService DB | MySQL | localhost:3308 | 3308 | db_user:db_user_password |
 | CartService DB | MySQL | localhost:3307 | 3307 | root:root |
 | OrderService DB | MySQL | localhost:3309 | 3309 | order_db_user:order_password |
-| **Administration phpMyAdmin** |
+
+#### Administration phpMyAdmin
+
+| Composant | Type | URL/Endpoint | Port | Authentification |
+|-----------|------|--------------|------|------------------|
 | UserService | Web UI | http://localhost:8083 | 8083 | db_user:db_user_password |
 | CartService | Web UI | http://localhost:8082 | 8082 | root:root |
 | OrderService | Web UI | http://localhost:8084 | 8084 | order_db_user:order_password |
-| **Infrastructure** |
+
+#### Infrastructure
+
+| Composant | Type | URL/Endpoint | Port | Authentification |
+|-----------|------|--------------|------|------------------|
 | Traefik Dashboard | Web UI | http://localhost:8090 | 8090 | admin:admin123 |
 | Kafka UI | Web UI | http://localhost:8081 | 8081 | - |
 | Kafka Broker | Service | localhost:29092 | 29092 | - |
