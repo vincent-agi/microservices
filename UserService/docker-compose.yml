@@ -13,6 +13,21 @@ services:
       - .env
     depends_on:
       - user-db
+    networks:
+      - microservices-network
+    labels:
+      # Activer Traefik pour ce service
+      - "traefik.enable=true"
+      # Configuration du routeur HTTP
+      - "traefik.http.routers.user-api.rule=Host(`localhost`) && PathPrefix(`/api/users`)"
+      - "traefik.http.routers.user-api.entrypoints=web"
+      - "traefik.http.routers.user-api.service=user-api"
+      # Configuration du service
+      - "traefik.http.services.user-api.loadbalancer.server.port=3000"
+      # Middleware pour strip prefix si nécessaire
+      - "traefik.http.routers.user-api.middlewares=user-api-stripprefix"
+      - "traefik.http.middlewares.user-api-stripprefix.stripprefix.prefixes=/api/users"
+      - "traefik.http.middlewares.user-api-stripprefix.stripprefix.forceSlash=false"
 
   user-db:
     image: mysql:8.0
@@ -29,6 +44,8 @@ services:
     volumes:
       - user_mysql_data:/var/lib/mysql
       - ./db-init:/docker-entrypoint-initdb.d
+    networks:
+      - microservices-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -42,6 +59,12 @@ services:
       - "8083:80"
     depends_on:
       - user-db
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    external: true
 
 volumes:
   user_mysql_data:

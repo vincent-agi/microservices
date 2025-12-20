@@ -5,6 +5,10 @@
 
 case "$1" in
     start)
+        echo "Démarrage de l'infrastructure (Traefik, Kafka)..."
+        docker-compose up -d
+        echo "Infrastructure démarrée!"
+        echo ""
         echo "Démarrage de tous les microservices..."
         cd CartService && docker-compose up -d --build
         cd ../OrderService && docker-compose up -d --build
@@ -17,20 +21,40 @@ case "$1" in
         echo "  - CartService API:    http://localhost:5001"
         echo "  - OrderService API:   http://localhost:8080"
         echo ""
-        echo "Administration des bases de données:"
+        echo "Via Traefik (API Gateway):"
+        echo "  - UserService:        http://localhost/api/users"
+        echo "  - CartService:        http://localhost/api/cart"
+        echo "  - OrderService:       http://localhost/api/orders"
+        echo ""
+        echo "Administration:"
+        echo "  - Traefik Dashboard:  http://localhost:8090 (admin:admin123)"
+        echo "  - Kafka UI:           http://localhost:8081"
         echo "  - User DB Admin:      http://localhost:8083"
         echo "  - Cart DB Admin:      http://localhost:8082"
         echo "  - Order DB Admin:     http://localhost:8084"
         ;;
     stop)
         echo "Arrêt de tous les microservices..."
+        cd CartService && docker-compose down
+        cd ../OrderService && docker-compose down
+        cd ../UserService && docker-compose down
+        cd ..
+        echo "Arrêt de l'infrastructure..."
         docker-compose down
         echo "Tous les services sont arrêtés!"
         ;;
     restart)
         echo "Redémarrage de tous les microservices..."
+        cd CartService && docker-compose down
+        cd ../OrderService && docker-compose down
+        cd ../UserService && docker-compose down
+        cd ..
         docker-compose down
         docker-compose up -d
+        cd CartService && docker-compose up -d --build
+        cd ../OrderService && docker-compose up -d --build
+        cd ../UserService && docker-compose up -d --build
+        cd ..
         echo "Tous les services ont été redémarrés!"
         ;;
     status)
