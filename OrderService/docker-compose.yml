@@ -17,6 +17,20 @@ services:
       DB_NAME: ${DB_NAME}
     depends_on:
       - db
+    networks:
+      - microservices-network
+    labels:
+      # Activer Traefik pour ce service
+      - "traefik.enable=true"
+      # Configuration du routeur HTTP
+      - "traefik.http.routers.order-api.rule=Host(`localhost`) && PathPrefix(`/api/orders`)"
+      - "traefik.http.routers.order-api.entrypoints=web"
+      - "traefik.http.routers.order-api.service=order-api"
+      # Configuration du service
+      - "traefik.http.services.order-api.loadbalancer.server.port=8080"
+      # Middleware pour strip prefix /api/orders -> /orders
+      - "traefik.http.routers.order-api.middlewares=order-api-stripprefix"
+      - "traefik.http.middlewares.order-api-stripprefix.stripprefix.prefixes=/api"
 
   db:
     image: mysql:8.0
@@ -32,6 +46,8 @@ services:
       - "3309:3306"
     volumes:
       - order_mysql_data:/var/lib/mysql
+    networks:
+      - microservices-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -46,6 +62,12 @@ services:
       - "8084:80"
     depends_on:
       - db
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    external: true
 
 volumes:
   order_mysql_data:

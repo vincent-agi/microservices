@@ -16,6 +16,20 @@ services:
       - "5001:5020"
     depends_on:
       - db
+    networks:
+      - microservices-network
+    labels:
+      # Activer Traefik pour ce service
+      - "traefik.enable=true"
+      # Configuration du routeur HTTP
+      - "traefik.http.routers.cart-api.rule=Host(`localhost`) && PathPrefix(`/api/cart`)"
+      - "traefik.http.routers.cart-api.entrypoints=web"
+      - "traefik.http.routers.cart-api.service=cart-api"
+      # Configuration du service
+      - "traefik.http.services.cart-api.loadbalancer.server.port=5020"
+      # Middleware pour strip prefix /api/cart -> /cart
+      - "traefik.http.routers.cart-api.middlewares=cart-api-stripprefix"
+      - "traefik.http.middlewares.cart-api-stripprefix.stripprefix.prefixes=/api"
 
   db:
     image: mysql:8.0
@@ -31,6 +45,8 @@ services:
       - "3307:3306"
     volumes:
       - cart_mysql_data:/var/lib/mysql
+    networks:
+      - microservices-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -45,6 +61,12 @@ services:
       - "8082:80"
     depends_on:
       - db
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    external: true
 
 volumes:
   cart_mysql_data:
