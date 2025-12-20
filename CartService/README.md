@@ -54,7 +54,7 @@ Lien : [http://localhost:8082](http://localhost:8082)
 | Utilisateur  | root   |
 | Mot de passe | root   |
 
-La base `mydb` existe déjà.
+La base `cart_db` existe déjà.
 
 ## Le code du microservice
 
