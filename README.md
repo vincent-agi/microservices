@@ -61,15 +61,74 @@ L'architecture adopte le pattern microservices avec :
 - **Traefik Dashboard** : [http://localhost:8090](http://localhost:8090) (admin:admin123)
 - **Kafka UI** : [http://localhost:8081](http://localhost:8081)
 
+### 📊 Tableau Récapitulatif des Accès
+
+| Service | Type | URL | Port | Identifiants |
+|---------|------|-----|------|--------------|
+| **UserService API** | API Gateway | http://localhost/api/users | 80 | JWT Token requis |
+| **UserService API** | Accès direct | http://localhost:3000 | 3000 | JWT Token requis |
+| **UserService Auth** | API Gateway | http://localhost/api/auth | 80 | - |
+| **UserService DB** | MySQL | localhost:3308 | 3308 | db_user / db_user_password |
+| **UserService Admin** | phpMyAdmin | http://localhost:8083 | 8083 | db_user / db_user_password |
+| **CartService API** | API Gateway | http://localhost/api/cart | 80 | - |
+| **CartService API** | Accès direct | http://localhost:5001 | 5001 | - |
+| **CartService DB** | MySQL | localhost:3307 | 3307 | root / root |
+| **CartService Admin** | phpMyAdmin | http://localhost:8082 | 8082 | root / root |
+| **OrderService API** | API Gateway | http://localhost/api/orders | 80 | - |
+| **OrderService API** | Accès direct | http://localhost:8080 | 8080 | - |
+| **OrderService DB** | MySQL | localhost:3309 | 3309 | order_db_user / order_password |
+| **OrderService Admin** | phpMyAdmin | http://localhost:8084 | 8084 | order_db_user / order_password |
+| **Traefik Dashboard** | Dashboard | http://localhost:8090 | 8090 | admin / admin123 |
+| **Kafka UI** | Dashboard | http://localhost:8081 | 8081 | - |
+
 #### Bases de Données MySQL
-- **User DB** : Port 3308
-- **Cart DB** : Port 3307
-- **Order DB** : Port 3309
+
+Chaque microservice possède sa propre base de données MySQL isolée :
+
+**UserService Database:**
+- **Port** : 3308
+- **Host** : localhost (externe) / user-db (interne Docker)
+- **Base de données** : db_user_database
+- **Utilisateur** : db_user
+- **Mot de passe** : db_user_password
+- **Root password** : db_user_password
+
+**CartService Database:**
+- **Port** : 3307
+- **Host** : localhost (externe) / db (interne Docker)
+- **Base de données** : cart_db
+- **Utilisateur** : root
+- **Mot de passe** : root
+
+**OrderService Database:**
+- **Port** : 3309
+- **Host** : localhost (externe) / order-db (interne Docker)
+- **Base de données** : order_database
+- **Utilisateur** : order_db_user
+- **Mot de passe** : order_password
+- **Root password** : order_password
 
 #### Interface d'Administration (phpMyAdmin)
-- **User DB Admin** : [http://localhost:8083](http://localhost:8083)
-- **Cart DB Admin** : [http://localhost:8082](http://localhost:8082)
-- **Order DB Admin** : [http://localhost:8084](http://localhost:8084)
+
+Chaque service dispose de sa propre instance phpMyAdmin pour gérer facilement sa base de données :
+
+**UserService phpMyAdmin:**
+- **URL** : [http://localhost:8083](http://localhost:8083)
+- **Serveur** : user-db
+- **Utilisateur** : db_user (ou root)
+- **Mot de passe** : db_user_password
+
+**CartService phpMyAdmin:**
+- **URL** : [http://localhost:8082](http://localhost:8082)
+- **Serveur** : db
+- **Utilisateur** : root
+- **Mot de passe** : root
+
+**OrderService phpMyAdmin:**
+- **URL** : [http://localhost:8084](http://localhost:8084)
+- **Serveur** : order-db
+- **Utilisateur** : order_db_user (ou root)
+- **Mot de passe** : order_password
 
 ## 🔐 Authentification JWT
 
@@ -197,6 +256,7 @@ cd OrderService && docker-compose up -d
 
 #### UserService (.env)
 ```env
+# Base de données
 DB_HOST=user-db
 DB_USER=db_user
 DB_PASSWORD=db_user_password
@@ -206,10 +266,19 @@ NODE_ENV=development
 # JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
 JWT_EXPIRATION=1h
+
+# Bcrypt Configuration
+BCRYPT_SALT_ROUNDS=10
+```
+
+**Connexion MySQL directe:**
+```bash
+mysql -h 127.0.0.1 -P 3308 -u db_user -pdb_user_password db_user_database
 ```
 
 #### CartService (.env)
 ```env
+# Base de données
 DB_HOST=db
 DB_USER=root
 DB_PASSWORD=root
@@ -217,13 +286,24 @@ DB_NAME=cart_db
 FLASK_ENV=development
 ```
 
+**Connexion MySQL directe:**
+```bash
+mysql -h 127.0.0.1 -P 3307 -u root -proot cart_db
+```
+
 #### OrderService (.env)
 ```env
-DB_HOST=db
+# Base de données
+DB_HOST=order-db
 DB_USER=order_db_user
 DB_PASSWORD=order_password
 DB_NAME=order_database
 SPRING_PROFILES_ACTIVE=dev
+```
+
+**Connexion MySQL directe:**
+```bash
+mysql -h 127.0.0.1 -P 3309 -u order_db_user -porder_password order_database
 ```
 
 ### Réseau et Communication
@@ -518,6 +598,52 @@ ports:
 ```bash
 docker system prune -a
 ./microservices.sh start
+```
+
+### Connexion aux bases de données
+
+#### Impossible de se connecter à phpMyAdmin
+
+**Vérifier que les conteneurs sont démarrés:**
+```bash
+docker ps | grep phpmyadmin
+docker ps | grep mysql
+```
+
+**Vérifier les logs phpMyAdmin:**
+```bash
+docker logs user-phpmyadmin
+docker logs cart-phpmyadmin
+docker logs order-phpmyadmin
+```
+
+#### Accès direct aux bases de données MySQL
+
+**UserService Database:**
+```bash
+# Via MySQL client
+mysql -h 127.0.0.1 -P 3308 -u db_user -pdb_user_password db_user_database
+
+# Via Docker exec
+docker exec -it user-mysql-dev mysql -u db_user -pdb_user_password db_user_database
+```
+
+**CartService Database:**
+```bash
+# Via MySQL client
+mysql -h 127.0.0.1 -P 3307 -u root -proot cart_db
+
+# Via Docker exec
+docker exec -it cart-mysql-dev mysql -u root -proot cart_db
+```
+
+**OrderService Database:**
+```bash
+# Via MySQL client
+mysql -h 127.0.0.1 -P 3309 -u order_db_user -porder_password order_database
+
+# Via Docker exec
+docker exec -it order-mysql-dev mysql -u order_db_user -porder_password order_database
 ```
 
 ### Réseau non trouvé
