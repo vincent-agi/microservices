@@ -1,7 +1,7 @@
 package com.example.orderservice.controller;
 
 import com.example.orderservice.dto.*;
-import com.example.orderservice.service.OrderService;
+import com.example.orderservice.service.OrderItemService;
 import com.example.orderservice.util.ApiError;
 import com.example.orderservice.util.ApiResponse;
 import com.example.orderservice.util.PaginatedResponse;
@@ -15,116 +15,121 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * REST Controller for Order endpoints.
- * Provides CRUD operations for orders.
+ * REST Controller for OrderItem endpoints.
+ * Provides CRUD operations for order items.
  */
 @RestController
-@RequestMapping("/api/orders")
-public class OrderController {
+@RequestMapping("/api/order-items")
+public class OrderItemController {
 
     @Autowired
-    private OrderService orderService;
+    private OrderItemService orderItemService;
 
     /**
-     * Create a new order
-     * POST /api/orders
+     * Create a new order item
+     * POST /api/order-items
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<OrderDTO>> createOrder(@Valid @RequestBody CreateOrderDTO createOrderDTO) {
-        OrderDTO order = orderService.createOrder(createOrderDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(order));
+    public ResponseEntity<?> createOrderItem(@Valid @RequestBody CreateOrderItemDTO createOrderItemDTO) {
+        Optional<OrderItemDTO> orderItem = orderItemService.createOrderItem(createOrderItemDTO);
+        if (orderItem.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(orderItem.get()));
+        } else {
+            Map<String, Object> details = new HashMap<>();
+            details.put("orderId", createOrderItemDTO.getOrderId());
+            ApiError error = new ApiError("NOT_FOUND", "Order with ID " + createOrderItemDTO.getOrderId() + " not found", details);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
     }
 
     /**
-     * Get all orders with pagination and optional filters
-     * GET /api/orders?page=1&limit=20&userId=1&status=CREATED
+     * Get all order items with pagination and optional filters
+     * GET /api/order-items?page=1&limit=20&orderId=1
      */
     @GetMapping
-    public ResponseEntity<PaginatedResponse<OrderDTO>> getAllOrders(
+    public ResponseEntity<PaginatedResponse<OrderItemDTO>> getAllOrderItems(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int limit,
-            @RequestParam(required = false) Integer userId,
-            @RequestParam(required = false) String status) {
+            @RequestParam(required = false) Long orderId) {
 
         // Validate pagination parameters
         if (page < 1) page = 1;
         if (limit < 1) limit = 20;
         if (limit > 100) limit = 100;
 
-        Page<OrderDTO> ordersPage = orderService.getAllOrders(page, limit, userId, status);
-        PaginatedResponse<OrderDTO> response = new PaginatedResponse<>(
-                ordersPage.getContent(),
+        Page<OrderItemDTO> itemsPage = orderItemService.getAllOrderItems(page, limit, orderId);
+        PaginatedResponse<OrderItemDTO> response = new PaginatedResponse<>(
+                itemsPage.getContent(),
                 page,
                 limit,
-                ordersPage.getTotalElements()
+                itemsPage.getTotalElements()
         );
 
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Get order by ID
-     * GET /api/orders/{id}
+     * Get order item by ID
+     * GET /api/order-items/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOrderById(@PathVariable Long id) {
-        Optional<OrderDTO> order = orderService.getOrderById(id);
-        if (order.isPresent()) {
-            return ResponseEntity.ok(new ApiResponse<>(order.get()));
+    public ResponseEntity<?> getOrderItemById(@PathVariable Long id) {
+        Optional<OrderItemDTO> orderItem = orderItemService.getOrderItemById(id);
+        if (orderItem.isPresent()) {
+            return ResponseEntity.ok(new ApiResponse<>(orderItem.get()));
         } else {
             Map<String, Object> details = new HashMap<>();
-            details.put("orderId", id);
-            ApiError error = new ApiError("NOT_FOUND", "Order with ID " + id + " not found", details);
+            details.put("orderItemId", id);
+            ApiError error = new ApiError("NOT_FOUND", "Order item with ID " + id + " not found", details);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
 
     /**
-     * Update an order
-     * PUT /api/orders/{id}
+     * Update an order item
+     * PUT /api/order-items/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrder(@PathVariable Long id, @RequestBody UpdateOrderDTO updateOrderDTO) {
-        Optional<OrderDTO> updatedOrder = orderService.updateOrder(id, updateOrderDTO);
-        if (updatedOrder.isPresent()) {
-            return ResponseEntity.ok(new ApiResponse<>(updatedOrder.get()));
+    public ResponseEntity<?> updateOrderItem(@PathVariable Long id, @RequestBody UpdateOrderItemDTO updateOrderItemDTO) {
+        Optional<OrderItemDTO> updatedItem = orderItemService.updateOrderItem(id, updateOrderItemDTO);
+        if (updatedItem.isPresent()) {
+            return ResponseEntity.ok(new ApiResponse<>(updatedItem.get()));
         } else {
             Map<String, Object> details = new HashMap<>();
-            details.put("orderId", id);
-            ApiError error = new ApiError("NOT_FOUND", "Order with ID " + id + " not found", details);
+            details.put("orderItemId", id);
+            ApiError error = new ApiError("NOT_FOUND", "Order item with ID " + id + " not found", details);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
 
     /**
-     * Delete an order
-     * DELETE /api/orders/{id}
+     * Delete an order item
+     * DELETE /api/order-items/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
-        boolean deleted = orderService.deleteOrder(id);
+    public ResponseEntity<?> deleteOrderItem(@PathVariable Long id) {
+        boolean deleted = orderItemService.deleteOrderItem(id);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
             Map<String, Object> details = new HashMap<>();
-            details.put("orderId", id);
-            ApiError error = new ApiError("NOT_FOUND", "Order with ID " + id + " not found", details);
+            details.put("orderItemId", id);
+            ApiError error = new ApiError("NOT_FOUND", "Order item with ID " + id + " not found", details);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
 
     /**
-     * Get orders by user ID
-     * GET /api/orders/user/{userId}?page=1&limit=20
+     * Get order items by order ID
+     * GET /api/order-items/order/{orderId}?page=1&limit=20
      */
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<PaginatedResponse<OrderDTO>> getOrdersByUserId(
-            @PathVariable Integer userId,
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<PaginatedResponse<OrderItemDTO>> getOrderItemsByOrderId(
+            @PathVariable Long orderId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int limit) {
 
@@ -133,27 +138,15 @@ public class OrderController {
         if (limit < 1) limit = 20;
         if (limit > 100) limit = 100;
 
-        Page<OrderDTO> ordersPage = orderService.getOrdersByUserId(userId, page, limit);
-        PaginatedResponse<OrderDTO> response = new PaginatedResponse<>(
-                ordersPage.getContent(),
+        Page<OrderItemDTO> itemsPage = orderItemService.getOrderItemsByOrderId(orderId, page, limit);
+        PaginatedResponse<OrderItemDTO> response = new PaginatedResponse<>(
+                itemsPage.getContent(),
                 page,
                 limit,
-                ordersPage.getTotalElements()
+                itemsPage.getTotalElements()
         );
 
         return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Health check endpoint
-     * GET /api/orders/health
-     */
-    @GetMapping("/health")
-    public ResponseEntity<Map<String, Object>> health() {
-        return ResponseEntity.ok(Map.of(
-                "status", "UP",
-                "service", "OrderService"
-        ));
     }
 
     /**
