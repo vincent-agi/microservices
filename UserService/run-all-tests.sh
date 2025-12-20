@@ -1,24 +1,21 @@
 #!/bin/bash
 
-# Script to run all API tests for OrderService
+# Script to run all API tests for UserService
 # Usage: ./run-all-tests.sh
 
 echo "======================================================================"
-echo "                  OrderService API Tests Suite                       "
+echo "                  UserService API Tests Suite                       "
 echo "======================================================================"
 echo ""
 echo "Starting comprehensive API tests..."
 echo ""
 
-./test-api-create-order.sh
-./test-api-read-orders.sh
-./test-api-update-order.sh
-./test-api-delete-order.sh
-
-./test-api-create-orderitem.sh
-./test-api-read-orderitems.sh
-./test-api-update-orderitem.sh
-./test-api-delete-orderitem.sh
+./test-api-register.sh
+./test-api-login.sh
+./test-api-create-user.sh
+./test-api-read-user.sh
+./test-api-update-user.sh
+./test-api-delete-user.sh
 
 echo "======================================================================"
 echo "                      Tests Completed                                 "

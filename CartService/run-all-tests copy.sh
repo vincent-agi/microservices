@@ -1,24 +1,32 @@
 #!/bin/bash
 
-# Script to run all API tests for OrderService
+# Script to run all API tests for CartService
 # Usage: ./run-all-tests.sh
 
 echo "======================================================================"
-echo "                  OrderService API Tests Suite                       "
+echo "                  CartService API Tests Suite                       "
 echo "======================================================================"
 echo ""
 echo "Starting comprehensive API tests..."
 echo ""
 
-./test-api-create-order.sh
-./test-api-read-orders.sh
-./test-api-update-order.sh
-./test-api-delete-order.sh
+# Test Orders endpoints
+echo "======================================================================"
+echo "                      ORDERS ENDPOINTS                                "
+echo "======================================================================"
+echo ""
 
-./test-api-create-orderitem.sh
-./test-api-read-orderitems.sh
-./test-api-update-orderitem.sh
-./test-api-delete-orderitem.sh
+./test-api-create-panier.sh
+./test-api-create-article.sh
+
+./test-api-read-articles.sh
+./test-api-read-paniers.sh
+
+./test-api-update-panier.sh
+./test-api-update-article.sh
+
+./test-api-delete-panier.sh
+./test-api-delete-article.sh
 
 echo "======================================================================"
 echo "                      Tests Completed                                 "
