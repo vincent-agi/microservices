@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { Role } from './entities/role.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { Role } from './entities/role.entity';
       logging: process.env.NODE_ENV === 'development',
     }),
     TypeOrmModule.forFeature([User, Role]),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [UsersService],
