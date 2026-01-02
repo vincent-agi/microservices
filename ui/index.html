@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices E-Commerce - Interface de Démonstration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🛒 Architecture Microservices E-Commerce</h1>
+        <p class="subtitle">Interface de démonstration des API</p>
+        <div id="auth-status" class="auth-status">
+            <span id="auth-message">Non connecté</span>
+            <button id="logout-btn" class="btn btn-secondary" style="display:none;">Déconnexion</button>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab-button active" data-tab="auth">Authentification</button>
+        <button class="tab-button" data-tab="users">Users Service</button>
+        <button class="tab-button" data-tab="cart">Cart Service</button>
+        <button class="tab-button" data-tab="orders">Order Service</button>
+        <button class="tab-button" data-tab="about">À propos</button>
+    </nav>
+
+    <main class="container">
+        <!-- Authentication Tab -->
+        <div id="auth-tab" class="tab-content active">
+            <h2>🔐 Authentification (UserService)</h2>
+            
+            <div class="card">
+                <h3>Inscription</h3>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="register-email" required placeholder="user@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe:</label>
+                        <input type="password" id="register-password" required placeholder="Minimum 8 caractères">
+                    </div>
+                    <div class="form-group">
+                        <label>Prénom:</label>
+                        <input type="text" id="register-firstname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom:</label>
+                        <input type="text" id="register-lastname" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">S'inscrire</button>
+                </form>
+                <div id="register-result" class="result"></div>
+            </div>
+
+            <div class="card">
+                <h3>Connexion</h3>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe:</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                </form>
+                <div id="login-result" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="users-tab" class="tab-content">
+            <h2>👥 UserService</h2>
+            
+            <div class="card">
+                <h3>Lister les utilisateurs</h3>
+                <button id="list-users-btn" class="btn btn-primary">Charger les utilisateurs</button>
+                <div id="users-list" class="result"></div>
+            </div>
+
+            <div class="card">
+                <h3>Créer un utilisateur</h3>
+                <form id="create-user-form">
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="user-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe:</label>
+                        <input type="password" id="user-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Prénom:</label>
+                        <input type="text" id="user-firstname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom:</label>
+                        <input type="text" id="user-lastname" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Créer</button>
+                </form>
+                <div id="create-user-result" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Cart Tab -->
+        <div id="cart-tab" class="tab-content">
+            <h2>🛒 CartService</h2>
+            
+            <div class="card">
+                <h3>Lister les paniers</h3>
+                <div class="form-group">
+                    <label>User ID (optionnel):</label>
+                    <input type="number" id="filter-user-id" placeholder="Filtrer par utilisateur">
+                </div>
+                <button id="list-carts-btn" class="btn btn-primary">Charger les paniers</button>
+                <div id="carts-list" class="result"></div>
+            </div>
+
+            <div class="card">
+                <h3>Créer un panier</h3>
+                <form id="create-cart-form">
+                    <div class="form-group">
+                        <label>User ID:</label>
+                        <input type="number" id="cart-user-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="cart-status">
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                            <option value="abandoned">Abandoned</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Créer le panier</button>
+                </form>
+                <div id="create-cart-result" class="result"></div>
+            </div>
+
+            <div class="card">
+                <h3>Ajouter un article au panier</h3>
+                <form id="add-article-form">
+                    <div class="form-group">
+                        <label>Panier ID:</label>
+                        <input type="number" id="article-cart-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Product ID:</label>
+                        <input type="text" id="article-product-id" required placeholder="PROD-123">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantité:</label>
+                        <input type="number" id="article-quantity" required min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Prix unitaire:</label>
+                        <input type="number" id="article-price" required step="0.01" min="0" placeholder="29.99">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ajouter l'article</button>
+                </form>
+                <div id="add-article-result" class="result"></div>
+            </div>
+
+            <div class="card">
+                <h3>Voir un panier avec articles</h3>
+                <div class="form-group">
+                    <label>Panier ID:</label>
+                    <input type="number" id="view-cart-id">
+                </div>
+                <button id="view-cart-btn" class="btn btn-primary">Voir le panier</button>
+                <div id="view-cart-result" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="orders-tab" class="tab-content">
+            <h2>📦 OrderService</h2>
+            
+            <div class="card">
+                <h3>Lister les commandes</h3>
+                <div class="form-group">
+                    <label>User ID (optionnel):</label>
+                    <input type="number" id="filter-order-user-id" placeholder="Filtrer par utilisateur">
+                </div>
+                <button id="list-orders-btn" class="btn btn-primary">Charger les commandes</button>
+                <div id="orders-list" class="result"></div>
+            </div>
+
+            <div class="card">
+                <h3>Créer une commande</h3>
+                <form id="create-order-form">
+                    <div class="form-group">
+                        <label>User ID:</label>
+                        <input type="number" id="order-user-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="order-status">
+                            <option value="PENDING">PENDING</option>
+                            <option value="PROCESSING">PROCESSING</option>
+                            <option value="SHIPPED">SHIPPED</option>
+                            <option value="DELIVERED">DELIVERED</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Montant total:</label>
+                        <input type="number" id="order-total" required step="0.01" min="0" placeholder="99.99">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Créer la commande</button>
+                </form>
+                <div id="create-order-result" class="result"></div>
+            </div>
+
+            <div class="card">
+                <h3>Ajouter un item à une commande</h3>
+                <form id="add-order-item-form">
+                    <div class="form-group">
+                        <label>Order ID:</label>
+                        <input type="number" id="orderitem-order-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Product ID:</label>
+                        <input type="text" id="orderitem-product-id" required placeholder="PROD-456">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantité:</label>
+                        <input type="number" id="orderitem-quantity" required min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Prix unitaire:</label>
+                        <input type="number" id="orderitem-price" required step="0.01" min="0" placeholder="49.99">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ajouter l'item</button>
+                </form>
+                <div id="add-order-item-result" class="result"></div>
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div id="about-tab" class="tab-content">
+            <h2>ℹ️ À propos</h2>
+            
+            <div class="card">
+                <h3>Architecture Microservices E-Commerce</h3>
+                <p>Cette interface permet de tester les différents endpoints des microservices de la plateforme e-commerce.</p>
+                
+                <h4>Services disponibles:</h4>
+                <ul>
+                    <li><strong>UserService (NestJS/TypeScript)</strong> - Gestion des utilisateurs et authentification JWT</li>
+                    <li><strong>CartService (Flask/Python)</strong> - Gestion des paniers d'achat</li>
+                    <li><strong>OrderService (Spring Boot/Java)</strong> - Gestion des commandes</li>
+                </ul>
+
+                <h4>Configuration:</h4>
+                <ul>
+                    <li><strong>API Gateway (Traefik):</strong> http://localhost</li>
+                    <li><strong>UserService:</strong> http://localhost/api/users</li>
+                    <li><strong>CartService:</strong> http://localhost/api/cart (ou http://localhost:5001 en direct)</li>
+                    <li><strong>OrderService:</strong> http://localhost/api/orders (ou http://localhost:8080 en direct)</li>
+                </ul>
+
+                <h4>Utilisation:</h4>
+                <ol>
+                    <li>Commencez par vous inscrire ou vous connecter dans l'onglet "Authentification"</li>
+                    <li>Une fois connecté, vous pouvez créer des utilisateurs, paniers et commandes</li>
+                    <li>Le token JWT est automatiquement stocké et utilisé pour les requêtes authentifiées</li>
+                </ol>
+
+                <h4>Technologies:</h4>
+                <ul>
+                    <li>Docker & Docker Compose</li>
+                    <li>Traefik (API Gateway)</li>
+                    <li>Kafka (Message Broker)</li>
+                    <li>MySQL (Base de données par service)</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Microservices E-Commerce - Projet étudiant</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
