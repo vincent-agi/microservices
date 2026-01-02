@@ -59,7 +59,7 @@ public class OrderService {
         // Validate user exists via UserService
         Integer userId = createOrderDTO.getUserId();
         if (userId != null && !userServiceClient.verifyUserExists(userId)) {
-            throw new IllegalArgumentException("User with ID " + userId + " not found in UserService");
+            throw new IllegalArgumentException("User validation failed. Please ensure the user exists.");
         }
 
         Order order = new Order();
