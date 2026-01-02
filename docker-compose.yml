@@ -65,6 +65,49 @@ services:
     networks:
       - microservices-network
 
+  kafka-init:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: kafka-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # Waiting for Kafka to be ready
+      echo 'Waiting for Kafka to be ready...'
+      cub kafka-ready -b kafka:9092 1 30
+
+      echo 'Creating Kafka topics...'
+      
+      # Order Service Topics
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic order.created
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic order.updated
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic order.cancelled
+      
+      # Payment Topics
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic payment.pending
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic payment.completed
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic payment.failed
+      
+      # Cart Service Topics
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic cart.item.added
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic cart.item.removed
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic cart.cleared
+      
+      # User Service Topics
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic user.registered
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 --topic user.updated
+      
+      echo 'Kafka topics created successfully!'
+      
+      # List all topics
+      echo 'Available topics:'
+      kafka-topics --list --bootstrap-server kafka:9092
+      "
+
   # Traefik - Reverse Proxy & API Gateway
   traefik:
     image: traefik:v3.0

@@ -448,7 +448,242 @@ docker logs -f traefik
 
 **URL:** http://localhost:8090
 
+### Kafka - Message Broker
+
+#### Choix Technique
+
+Apache Kafka a été choisi comme système de messagerie pour plusieurs raisons:
+- **Communication asynchrone**: Permet le découplage des microservices
+- **Scalabilité**: Gestion efficace de grands volumes de messages
+- **Résilience**: Persistance des messages et garantie de livraison
+- **Event-driven architecture**: Support natif des patterns événementiels
+- **Performance**: Très haute capacité de traitement (throughput)
+
+#### Architecture Kafka
+
+**Composants:**
+- **Zookeeper** (Port 2181): Coordination et gestion du cluster Kafka
+- **Kafka Broker** (Port 9092): Serveur de messages
+- **Kafka UI** (Port 8081): Interface d'administration web
+
+**Configuration:**
+```yaml
+KAFKA_ADVERTISED_LISTENERS: 
+  - PLAINTEXT://kafka:9092 (communication interne Docker)
+  - PLAINTEXT_HOST://localhost:29092 (accès externe)
+KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+```
+
+#### Topics Pré-configurés
+
+Les topics suivants sont automatiquement créés au démarrage via le service `kafka-init`:
+
+**Order Service Topics:**
+- `order.created` - Événement de création de commande
+- `order.updated` - Événement de mise à jour de commande
+- `order.cancelled` - Événement d'annulation de commande
+
+**Payment Topics:**
+- `payment.pending` - Paiement en cours
+- `payment.completed` - Paiement réussi
+- `payment.failed` - Paiement échoué
+
+**Cart Service Topics:**
+- `cart.item.added` - Article ajouté au panier
+- `cart.item.removed` - Article retiré du panier
+- `cart.cleared` - Panier vidé
+
+**User Service Topics:**
+- `user.registered` - Nouvel utilisateur enregistré
+- `user.updated` - Profil utilisateur mis à jour
+
+**Configuration des topics:**
+- Partitions: 3 (pour permettre la parallélisation)
+- Replication Factor: 1 (suffisant pour le développement)
+- Cleanup Policy: Delete (messages supprimés après rétention)
+
+#### Utilisation dans les Microservices
+
+**Exemple avec Node.js (UserService) - KafkaJS:**
+
+```javascript
+// Installation
+npm install kafkajs
+
+// Configuration du producer
+import { Kafka } from 'kafkajs';
+
+const kafka = new Kafka({
+  clientId: 'user-service',
+  brokers: ['kafka:9092']
+});
+
+const producer = kafka.producer();
+
+// Envoyer un événement
+await producer.connect();
+await producer.send({
+  topic: 'user.registered',
+  messages: [
+    {
+      key: userId,
+      value: JSON.stringify({
+        userId,
+        email,
+        timestamp: new Date().toISOString()
+      })
+    }
+  ]
+});
+
+// Configuration du consumer
+const consumer = kafka.consumer({ groupId: 'user-service-group' });
+await consumer.connect();
+await consumer.subscribe({ topic: 'payment.completed' });
+
+await consumer.run({
+  eachMessage: async ({ topic, partition, message }) => {
+    console.log({
+      topic,
+      value: message.value.toString()
+    });
+  }
+});
+```
+
+**Exemple avec Python (CartService) - kafka-python:**
+
+```python
+# Installation
+pip install kafka-python
+
+# Configuration du producer
+from kafka import KafkaProducer
+import json
+
+producer = KafkaProducer(
+    bootstrap_servers=['kafka:9092'],
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
+
+# Envoyer un événement
+producer.send('cart.item.added', {
+    'userId': user_id,
+    'productId': product_id,
+    'quantity': quantity,
+    'timestamp': datetime.now().isoformat()
+})
+producer.flush()
+
+# Configuration du consumer
+from kafka import KafkaConsumer
+
+consumer = KafkaConsumer(
+    'order.created',
+    bootstrap_servers=['kafka:9092'],
+    group_id='cart-service-group',
+    value_deserializer=lambda m: json.loads(m.decode('utf-8'))
+)
+
+for message in consumer:
+    print(f"Received: {message.value}")
+```
+
+**Exemple avec Java (OrderService) - Spring Kafka:**
+
+```java
+// Installation (pom.xml)
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <artifactId>spring-kafka</artifactId>
+</dependency>
+
+// Configuration (application.yml)
+spring:
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: order-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+// Producer
+@Service
+public class OrderEventProducer {
+    @Autowired
+    private KafkaTemplate<String, OrderEvent> kafkaTemplate;
+    
+    public void sendOrderCreated(OrderEvent event) {
+        kafkaTemplate.send("order.created", event.getOrderId(), event);
+    }
+}
+
+// Consumer
+@Service
+public class PaymentEventConsumer {
+    @KafkaListener(topics = "payment.completed", groupId = "order-service-group")
+    public void consume(PaymentEvent event) {
+        System.out.println("Payment completed: " + event);
+    }
+}
+```
+
+#### Bonnes Pratiques
+
+**Format des Messages:**
+```json
+{
+  "eventId": "uuid-v4",
+  "eventType": "order.created",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "version": "1.0",
+  "data": {
+    "orderId": "order-123",
+    "userId": "user-456",
+    "amount": 99.99,
+    "items": [...]
+  }
+}
+```
+
+**Recommandations:**
+1. **Idempotence**: Inclure un `eventId` unique pour détecter les doublons
+2. **Schema versioning**: Inclure une version pour gérer l'évolution des messages
+3. **Timestamp**: Toujours inclure la date/heure de l'événement
+4. **Error handling**: Implémenter des dead letter queues pour les échecs
+5. **Monitoring**: Utiliser Kafka UI pour surveiller les topics et consommateurs
+
+#### Accès et Monitoring
+
+**Kafka UI (Provectus):**
+- URL: http://localhost:8081
+- Fonctionnalités:
+  - Visualisation des topics et messages
+  - Gestion des consumer groups
+  - Monitoring des performances
+  - Configuration des brokers
+
+**Ligne de commande:**
+```bash
+# Lister les topics
+docker exec kafka kafka-topics --list --bootstrap-server localhost:9092
+
+# Décrire un topic
+docker exec kafka kafka-topics --describe --topic order.created --bootstrap-server localhost:9092
+
+# Consommer des messages (pour debug)
+docker exec kafka kafka-console-consumer --topic order.created --from-beginning --bootstrap-server localhost:9092
+
+# Produire un message (pour test)
+docker exec -it kafka kafka-console-producer --topic order.created --bootstrap-server localhost:9092
+```
+
 ### Kafka UI
+
 
 **Informations disponibles:**
 - Topics Kafka
