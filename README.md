@@ -322,14 +322,25 @@ mysql -h 127.0.0.1 -P 3309 -u order_db_user -porder_password order_database
 - ✅ Profils utilisateurs
 
 ### CartService  
-- Gestion du panier d'achat
-- Ajout/suppression d'articles
-- Calcul des totaux
+- ✅ Gestion du panier d'achat
+- ✅ Ajout/suppression d'articles
+- ✅ Calcul des totaux
+- ✅ **Validation utilisateur via UserService**
 
 ### OrderService
-- Création et suivi des commandes
-- Gestion des statuts
-- Historique des commandes
+- ✅ Création et suivi des commandes
+- ✅ Gestion des statuts
+- ✅ Historique des commandes
+- ✅ **Validation utilisateur via UserService**
+- ✅ **Récupération de données panier via CartService**
+- ✅ **Endpoint enrichi avec agrégation multi-services**
+
+### Communication Inter-Services
+- ✅ CartService → UserService (validation d'utilisateurs)
+- ✅ OrderService → UserService (validation d'utilisateurs)
+- ✅ OrderService → CartService (récupération de paniers)
+- ✅ Endpoint d'enrichissement de données (multi-services)
+- ✅ Script de test complet (`test-inter-service-communication.sh`)
 
 ### API Gateway (Traefik)
 - ✅ Routage des requêtes HTTP
@@ -350,6 +361,7 @@ mysql -h 127.0.0.1 -P 3309 -u order_db_user -porder_password order_database
 - **[Documentation Technique](./docs/TECHNICAL_DOCUMENTATION.md)** - Architecture, choix techniques, JWT
 - **[Documentation Métier](./docs/BUSINESS_DOCUMENTATION.md)** - Cas d'usage, règles métier, workflows
 - **[Guide Traefik](./docs/TRAEFIK_GUIDE.md)** - Configuration, routage, dashboard
+- **[Communication Inter-Services](./INTER_SERVICE_COMMUNICATION.md)** - Tests et validation de la communication entre microservices
 
 ### Documentation par Service
 - **[UserService](./UserService/README.md)** - API, endpoints, tests
@@ -360,6 +372,22 @@ mysql -h 127.0.0.1 -P 3309 -u order_db_user -porder_password order_database
 - **[Standardisation API REST](./standardisation_api_rest.md)** - Conventions REST à suivre
 
 ## 🧪 Tests
+
+### Test de Communication Inter-Services
+
+**Script complet de test:**
+```bash
+# Teste la communication entre tous les microservices
+./test-inter-service-communication.sh
+```
+
+Ce script démontre:
+- CartService → UserService (validation utilisateur)
+- OrderService → UserService (validation utilisateur)
+- OrderService → CartService (récupération panier)
+- Agrégation de données depuis plusieurs services
+
+Voir la [documentation complète](./INTER_SERVICE_COMMUNICATION.md) pour plus de détails.
 
 ### UserService
 
