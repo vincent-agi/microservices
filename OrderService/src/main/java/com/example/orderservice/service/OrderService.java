@@ -1,5 +1,7 @@
 package com.example.orderservice.service;
 
+import com.example.orderservice.client.UserServiceClient;
+import com.example.orderservice.client.CartServiceClient;
 import com.example.orderservice.dto.*;
 import com.example.orderservice.entity.Order;
 import com.example.orderservice.entity.OrderItem;
@@ -14,19 +16,28 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Service class for Order business logic.
  * Handles CRUD operations and order management.
+ * Communicates with UserService and CartService for validation and data retrieval.
  */
 @Service
 public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private UserServiceClient userServiceClient;
+
+    @Autowired
+    private CartServiceClient cartServiceClient;
 
     private static final DateTimeFormatter ORDER_NUMBER_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
@@ -41,9 +52,16 @@ public class OrderService {
 
     /**
      * Create a new order
+     * Validates user existence via UserService before creating the order.
      */
     @Transactional
     public OrderDTO createOrder(CreateOrderDTO createOrderDTO) {
+        // Validate user exists via UserService
+        Integer userId = createOrderDTO.getUserId();
+        if (userId != null && !userServiceClient.verifyUserExists(userId)) {
+            throw new IllegalArgumentException("User validation failed. Please ensure the user exists.");
+        }
+
         Order order = new Order();
         order.setOrderNumber(generateOrderNumber());
         order.setUserId(createOrderDTO.getUserId());
@@ -139,6 +157,32 @@ public class OrderService {
         Pageable pageable = PageRequest.of(page - 1, limit);
         return orderRepository.findByUserId(userId, pageable)
                 .map(this::convertToDTOWithoutItems);
+    }
+
+    /**
+     * Get enriched order data by fetching user and cart information from other services.
+     * Demonstrates inter-service communication.
+     * 
+     * @param orderDTO The order to enrich
+     * @return Map containing order data, user data, and cart data
+     */
+    public Map<String, Object> getEnrichedOrderData(OrderDTO orderDTO) {
+        Map<String, Object> enrichedData = new HashMap<>();
+        enrichedData.put("order", orderDTO);
+
+        // Fetch user information from UserService
+        if (orderDTO.getUserId() != null) {
+            Object userData = userServiceClient.getUserInfo(orderDTO.getUserId());
+            enrichedData.put("user", userData != null ? userData : Map.of("error", "User not found"));
+        }
+
+        // Fetch cart information from CartService
+        if (orderDTO.getUserId() != null) {
+            Object cartData = cartServiceClient.getCartByUserId(orderDTO.getUserId());
+            enrichedData.put("userCarts", cartData != null ? cartData : Map.of("info", "No carts found"));
+        }
+
+        return enrichedData;
     }
 
     /**

@@ -157,6 +157,27 @@ public class OrderController {
     }
 
     /**
+     * Get enriched order information with user and cart data from other services
+     * GET /api/orders/{id}/enriched
+     * Demonstrates inter-service communication
+     */
+    @GetMapping("/{id}/enriched")
+    public ResponseEntity<?> getEnrichedOrder(@PathVariable Long id) {
+        Optional<OrderDTO> orderOpt = orderService.getOrderById(id);
+        if (orderOpt.isEmpty()) {
+            Map<String, Object> details = new HashMap<>();
+            details.put("orderId", id);
+            ApiError error = new ApiError("NOT_FOUND", "Order with ID " + id + " not found", details);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+
+        OrderDTO order = orderOpt.get();
+        Map<String, Object> enrichedData = orderService.getEnrichedOrderData(order);
+        
+        return ResponseEntity.ok(new ApiResponse<>(enrichedData));
+    }
+
+    /**
      * Exception handler for validation errors
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
