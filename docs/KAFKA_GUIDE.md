@@ -373,7 +373,7 @@ Pour assurer la compatibilité entre services, tous les messages doivent suivre 
 {
   "eventId": "550e8400-e29b-41d4-a716-446655440000",
   "eventType": "order.created",
-  "timestamp": "2026-01-02T16:30:00.000Z",
+  "timestamp": "2024-12-15T16:30:00.000Z",
   "version": "1.0",
   "data": {
     "orderId": "order-123",
