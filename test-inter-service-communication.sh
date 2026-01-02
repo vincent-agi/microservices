@@ -361,6 +361,24 @@ print_success "Phase 4 terminée - Commandes créées dans OrderService"
 pause_read
 
 ################################################################################
+# PHASE 4.5: Démonstration de l'endpoint enrichi (OrderService → UserService + CartService)
+################################################################################
+
+print_header "PHASE 4.5: Endpoint Enrichi - Agrégation de Données Multi-Services"
+
+print_step "4.5.1 - Récupération d'une commande enrichie avec données utilisateur et panier"
+print_info "OrderService va INTERROGER UserService ET CartService pour enrichir les données"
+echo "GET $ORDER_SERVICE_URL/api/orders/1/enriched"
+echo ""
+
+curl -s -X GET "$ORDER_SERVICE_URL/api/orders/1/enriched" | python3 -m json.tool 2>/dev/null
+echo ""
+
+print_success "Données enrichies récupérées avec succès!"
+print_info "La réponse contient: Order + User (via UserService) + Cart (via CartService)"
+pause_read
+
+################################################################################
 # PHASE 5: Démonstration de la récupération de données inter-services
 ################################################################################
 
@@ -446,7 +464,11 @@ echo ""
 echo -e "${GREEN}✓ OrderService:${NC}"
 echo "  - Commandes créées avec succès"
 echo "  - Association avec les utilisateurs"
-echo "  - ${YELLOW}Communication validée: OrderService ↔ UserService${NC}"
+echo "  - ${YELLOW}Communication validée: OrderService → UserService${NC}"
+echo "  - Validation des utilisateurs avant création de commande"
+echo "  - ${YELLOW}Communication validée: OrderService → CartService${NC}"
+echo "  - ${YELLOW}Endpoint enrichi: OrderService → UserService + CartService${NC}"
+echo "  - Agrégation de données depuis plusieurs microservices"
 echo ""
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
@@ -458,8 +480,9 @@ print_info "Workflow complet e-commerce testé:"
 echo "  1. Création d'utilisateurs (UserService)"
 echo "  2. Validation utilisateur lors de création panier (CartService → UserService)"
 echo "  3. Gestion d'articles dans les paniers (CartService)"
-echo "  4. Création de commandes (OrderService)"
+echo "  4. Création de commandes avec validation (OrderService → UserService)"
 echo "  5. Récupération de données croisées entre services"
+echo "  6. Agrégation de données multi-services (OrderService → UserService + CartService)"
 echo ""
 
 print_success "Tous les microservices communiquent correctement entre eux!"
