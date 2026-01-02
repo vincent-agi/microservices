@@ -344,6 +344,34 @@ mysql -h 127.0.0.1 -P 3309 -u order_db_user -porder_password order_database
 - ✅ MySQL par service
 - ✅ phpMyAdmin par service
 
+### Kafka Topics (Communication Asynchrone)
+
+Les topics Kafka suivants sont pré-configurés et automatiquement créés au démarrage:
+
+#### Topics Order Service
+- **order.created** - Émis lors de la création d'une nouvelle commande
+- **order.updated** - Émis lors de la mise à jour du statut d'une commande
+- **order.cancelled** - Émis lors de l'annulation d'une commande
+
+#### Topics Payment
+- **payment.pending** - Émis lors du démarrage d'un paiement
+- **payment.completed** - Émis lors de la réussite d'un paiement
+- **payment.failed** - Émis lors de l'échec d'un paiement
+
+#### Topics Cart Service
+- **cart.item.added** - Émis lors de l'ajout d'un article au panier
+- **cart.item.removed** - Émis lors de la suppression d'un article du panier
+- **cart.cleared** - Émis lors de la vidange du panier
+
+#### Topics User Service
+- **user.registered** - Émis lors de l'inscription d'un nouvel utilisateur
+- **user.updated** - Émis lors de la mise à jour d'un profil utilisateur
+
+**Configuration:**
+- Partitions: 3 par topic (pour la scalabilité)
+- Replication Factor: 1 (développement)
+- Access Kafka UI: [http://localhost:8081](http://localhost:8081)
+
 ## 📖 Documentation
 
 ### Documentation Complète
