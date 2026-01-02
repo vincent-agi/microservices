@@ -21,6 +21,22 @@ cd microservices
 La plateforme démarre dans l'ordre suivant:
 1. Infrastructure (Traefik, Kafka, Zookeeper)
 2. Microservices (User, Cart, Order)
+3. Interface utilisateur (UI)
+
+### 🖥️ Interface Utilisateur
+
+Une fois la plateforme démarrée, accédez à l'interface de démonstration :
+
+**URL** : [http://localhost:3001](http://localhost:3001)
+
+L'interface permet de :
+- 🔐 S'inscrire et se connecter (authentification JWT)
+- 👥 Gérer les utilisateurs (UserService)
+- 🛒 Créer et gérer des paniers (CartService)
+- 📦 Créer et gérer des commandes (OrderService)
+- ✅ Tester tous les endpoints des microservices
+
+> **Documentation complète** : Voir [ui/README.md](./ui/README.md) pour plus de détails.
 
 ## 📋 Équipes et Attribution des Services
 
@@ -58,6 +74,7 @@ L'architecture adopte le pattern microservices avec :
 - **OrderService** : [http://localhost:8080](http://localhost:8080)
 
 #### Infrastructure et Administration
+- **Interface Utilisateur** : [http://localhost:3001](http://localhost:3001) - Interface de démonstration des API
 - **Traefik Dashboard** : [http://localhost:8090](http://localhost:8090) (admin:admin123)
 - **Kafka UI** : [http://localhost:8081](http://localhost:8081)
 
@@ -78,6 +95,7 @@ L'architecture adopte le pattern microservices avec :
 | **OrderService API** | Accès direct | http://localhost:8080 | 8080 | - |
 | **OrderService DB** | MySQL | localhost:3309 | 3309 | order_db_user / order_password |
 | **OrderService Admin** | phpMyAdmin | http://localhost:8084 | 8084 | order_db_user / order_password |
+| **UI - Interface Web** | Interface Demo | http://localhost:3001 | 3001 | - |
 | **Traefik Dashboard** | Dashboard | http://localhost:8090 | 8090 | admin / admin123 |
 | **Kafka UI** | Dashboard | http://localhost:8081 | 8081 | - |
 
