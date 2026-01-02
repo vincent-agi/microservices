@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initUserForms();
     initCartForms();
     initOrderForms();
+    initLogoutButton();
     updateAuthStatus();
 });
 
@@ -52,7 +53,11 @@ function updateAuthStatus() {
         authMessage.textContent = 'Non connecté';
         logoutBtn.style.display = 'none';
     }
+}
 
+// Initialize logout button (called once on page load)
+function initLogoutButton() {
+    const logoutBtn = document.getElementById('logout-btn');
     logoutBtn.addEventListener('click', logout);
 }
 
