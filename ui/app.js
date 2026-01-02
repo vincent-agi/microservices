@@ -55,7 +55,7 @@ function updateAuthStatus() {
     }
 }
 
-// Initialize logout button (called once on page load)
+// Initialize logout button (called once on page load to prevent multiple event listeners)
 function initLogoutButton() {
     const logoutBtn = document.getElementById('logout-btn');
     logoutBtn.addEventListener('click', logout);
