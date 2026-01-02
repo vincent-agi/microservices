@@ -1,5 +1,8 @@
 package com.example.orderservice.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -12,13 +15,16 @@ import org.springframework.web.client.HttpClientErrorException;
 @Component
 public class UserServiceClient {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceClient.class);
+
     @Value("${userservice.url:http://user-api-dev:3000}")
     private String userServiceUrl;
 
     private final RestTemplate restTemplate;
 
-    public UserServiceClient() {
-        this.restTemplate = new RestTemplate();
+    @Autowired
+    public UserServiceClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     /**
@@ -35,14 +41,16 @@ public class UserServiceClient {
         try {
             String url = userServiceUrl + "/users/" + userId;
             restTemplate.getForObject(url, Object.class);
+            logger.debug("User {} verified successfully in UserService", userId);
             return true;
         } catch (HttpClientErrorException.NotFound e) {
             // User not found (404)
+            logger.debug("User {} not found in UserService", userId);
             return false;
         } catch (Exception e) {
             // Log error but don't fail the request
             // In production, you might want to handle this differently
-            System.err.println("Error communicating with UserService: " + e.getMessage());
+            logger.error("Error communicating with UserService: {}", e.getMessage());
             // Return true to not block order creation if UserService is down
             // In production, you might want to fail instead or use circuit breaker
             return true;
@@ -62,9 +70,11 @@ public class UserServiceClient {
 
         try {
             String url = userServiceUrl + "/users/" + userId;
-            return restTemplate.getForObject(url, Object.class);
+            Object userData = restTemplate.getForObject(url, Object.class);
+            logger.debug("Retrieved user info for user {} from UserService", userId);
+            return userData;
         } catch (Exception e) {
-            System.err.println("Error fetching user from UserService: " + e.getMessage());
+            logger.error("Error fetching user from UserService: {}", e.getMessage());
             return null;
         }
     }

@@ -5,7 +5,7 @@
 # 
 # Ce script démontre la communication entre les microservices:
 # - UserService (NestJS/TypeScript) - Port 3000
-# - CartService (Flask/Python) - Port 5001  
+# - CartService (Flask/Python) - Port 5001 (externe), 5020 (interne Docker)
 # - OrderService (Spring Boot/Java) - Port 8080
 #
 # Le script exécute un workflow complet e-commerce:
