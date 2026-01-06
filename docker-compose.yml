@@ -149,4 +149,21 @@ services:
       - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
       - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$oUypAAUA$$bG4cWLaO335CQdt6chRKP0"
 
+  # UI - Interface utilisateur pour démonstration
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: microservices-ui
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    networks:
+      - microservices-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ui.rule=Host(`ui.localhost`) || PathPrefix(`/ui`)"
+      - "traefik.http.routers.ui.entrypoints=web"
+      - "traefik.http.services.ui.loadbalancer.server.port=80"
+
 # Pas de volumes nécessaires - gérés par les docker-compose individuels
