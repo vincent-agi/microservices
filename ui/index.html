@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>🛒 Architecture Microservices E-Commerce</h1>
+        <h1>Architecture Microservices E-Commerce</h1>
         <p class="subtitle">Interface de démonstration des API</p>
         <div id="auth-status" class="auth-status">
             <span id="auth-message">Non connecté</span>
@@ -27,7 +27,7 @@
     <main class="container">
         <!-- Authentication Tab -->
         <div id="auth-tab" class="tab-content active">
-            <h2>🔐 Authentification (UserService)</h2>
+            <h2>Authentification (UserService)</h2>
             
             <div class="card">
                 <h3>Inscription</h3>
@@ -72,7 +72,7 @@
 
         <!-- Users Tab -->
         <div id="users-tab" class="tab-content">
-            <h2>👥 UserService</h2>
+            <h2>UserService</h2>
             
             <div class="card">
                 <h3>Lister les utilisateurs</h3>
@@ -107,7 +107,7 @@
 
         <!-- Cart Tab -->
         <div id="cart-tab" class="tab-content">
-            <h2>🛒 CartService</h2>
+            <h2>CartService</h2>
             
             <div class="card">
                 <h3>Lister les paniers</h3>
@@ -176,7 +176,7 @@
 
         <!-- Orders Tab -->
         <div id="orders-tab" class="tab-content">
-            <h2>📦 OrderService</h2>
+            <h2>OrderService</h2>
             
             <div class="card">
                 <h3>Lister les commandes</h3>
@@ -194,6 +194,14 @@
                     <div class="form-group">
                         <label>User ID:</label>
                         <input type="number" id="order-user-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse de livraison:</label>
+                        <textarea id="order-shipping-address" required rows="2" placeholder="123 Rue de Paris, 75001 Paris, France"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse de facturation:</label>
+                        <textarea id="order-billing-address" required rows="2" placeholder="123 Rue de Paris, 75001 Paris, France"></textarea>
                     </div>
                     <div class="form-group">
                         <label>Status:</label>
@@ -241,7 +249,7 @@
 
         <!-- About Tab -->
         <div id="about-tab" class="tab-content">
-            <h2>ℹ️ À propos</h2>
+            <h2>À propos</h2>
             
             <div class="card">
                 <h3>Architecture Microservices E-Commerce</h3>
@@ -279,10 +287,6 @@
             </div>
         </div>
     </main>
-
-    <footer>
-        <p>&copy; 2024 Microservices E-Commerce - Projet étudiant</p>
-    </footer>
 
     <script src="app.js"></script>
 </body>

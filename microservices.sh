@@ -13,7 +13,7 @@ case "$1" in
         cd CartService && docker-compose up -d --build
         cd ../OrderService && docker-compose up -d --build
         cd ../UserService && docker-compose up -d --build
-        cd ..
+        cd ../ui
         echo "Tous les services sont démarrés!"
         echo ""
         echo "📍 URLs d'accès:"

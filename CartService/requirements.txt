@@ -1,4 +1,5 @@
 Flask>=3.0
+Flask-CORS>=4.0
 python-dotenv
 mysql-connector-python
 SQLAlchemy>=2.0

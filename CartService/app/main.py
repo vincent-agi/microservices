@@ -2,11 +2,26 @@
 CartService - Flask REST API for shopping cart management.
 """
 from flask import Flask
+from flask_cors import CORS
 from controllers.panier_controller import panier_bp
 from controllers.article_controller import article_bp
 import atexit
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:3001",
+            "http://localhost",
+            "http://ui.localhost"
+        ],
+        "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization", "Accept"],
+        "supports_credentials": True
+    }
+})
 
 
 # Register blueprints
