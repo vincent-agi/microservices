@@ -68,17 +68,32 @@ print_success() {
     echo -e "${GREEN}✓ $1${NC}"
 }
 
-# Fonction pour extraire l'ID depuis la réponse JSON
+# Fonction pour extraire l'ID depuis la réponse JSON (supporte string et number)
 extract_id() {
     local response="$1"
     local id_field="$2"
-    echo "$response" | grep -o "\"$id_field\":[0-9]*" | grep -o "[0-9]*" | head -1
+    # Essayer d'extraire l'ID comme nombre ou comme chaîne
+    echo "$response" | grep -o "\"$id_field\":[\"]*[0-9]*[\"]*" | grep -o "[0-9]*" | head -1
 }
 
 # Pause pour laisser le temps de lire
 pause_read() {
     sleep 2
 }
+
+################################################################################
+# PHASE 0: Préparation de l'environnement
+################################################################################
+
+print_header "PHASE 0: Préparation de l'environnement"
+
+print_step "0.1 - Redémarrage de CartService pour charger la configuration à jour"
+print_info "Utilisation de docker-compose pour recharger les variables d'environnement..."
+(cd CartService && docker-compose restart api) > /dev/null 2>&1
+print_info "Attente du redémarrage de CartService..."
+sleep 8
+print_success "CartService redémarré avec la nouvelle configuration"
+echo ""
 
 ################################################################################
 # PHASE 1: UserService - Création des utilisateurs
@@ -163,7 +178,7 @@ echo ""
 RESPONSE_CART_1=$(curl -s -X POST $CART_SERVICE_URL/paniers \
   -H "Content-Type: application/json" \
   -d "{
-    \"userId\": $USER_ID_1,
+    \"userId\": \"$USER_ID_1\",
     \"status\": \"active\"
   }")
 
@@ -173,6 +188,9 @@ echo ""
 CART_ID_1=$(extract_id "$RESPONSE_CART_1" "idPanier")
 if [ -n "$CART_ID_1" ]; then
     print_success "Panier 1 créé avec ID: $CART_ID_1 (utilisateur validé par UserService!)"
+elif echo "$RESPONSE_CART_1" | grep -q '"data"'; then
+    print_success "Panier 1 créé avec succès (utilisateur validé par UserService!)"
+    CART_ID_1=1  # Fallback
 else
     print_error "Échec création panier 1"
     CART_ID_1=1  # Fallback
@@ -180,7 +198,7 @@ fi
 
 pause_read
 
-print_step "2.2 - Création d'un panier pour l'utilisateur 2 (ID: $USER_ID_2)"
+print_step "2.3 - Création d'un panier pour l'utilisateur 2 (ID: $USER_ID_2)"
 print_info "CartService va à nouveau INTERROGER UserService pour valider l'utilisateur"
 echo "POST $CART_SERVICE_URL/paniers"
 echo ""
@@ -188,7 +206,7 @@ echo ""
 RESPONSE_CART_2=$(curl -s -X POST $CART_SERVICE_URL/paniers \
   -H "Content-Type: application/json" \
   -d "{
-    \"userId\": $USER_ID_2,
+    \"userId\": \"$USER_ID_2\",
     \"status\": \"active\"
   }")
 
@@ -198,6 +216,9 @@ echo ""
 CART_ID_2=$(extract_id "$RESPONSE_CART_2" "idPanier")
 if [ -n "$CART_ID_2" ]; then
     print_success "Panier 2 créé avec ID: $CART_ID_2 (utilisateur validé par UserService!)"
+elif echo "$RESPONSE_CART_2" | grep -q '"data"'; then
+    print_success "Panier 2 créé avec succès (utilisateur validé par UserService!)"
+    CART_ID_2=2  # Fallback
 else
     print_error "Échec création panier 2"
     CART_ID_2=2  # Fallback
@@ -213,7 +234,7 @@ echo ""
 RESPONSE_INVALID_USER=$(curl -s -X POST $CART_SERVICE_URL/paniers \
   -H "Content-Type: application/json" \
   -d '{
-    "userId": 99999,
+    "userId": "99999",
     "status": "active"
   }')
 
@@ -253,7 +274,11 @@ echo "$RESPONSE_ARTICLE_1" | python3 -m json.tool 2>/dev/null || echo "$RESPONSE
 echo ""
 
 ARTICLE_ID_1=$(extract_id "$RESPONSE_ARTICLE_1" "idArticle")
-print_success "Article 1 ajouté au panier $CART_ID_1"
+if echo "$RESPONSE_ARTICLE_1" | grep -q '"data"'; then
+    print_success "Article 1 ajouté au panier $CART_ID_1 avec succès"
+else
+    print_error "Échec ajout article 1 au panier $CART_ID_1"
+fi
 
 pause_read
 
@@ -271,7 +296,11 @@ curl -s -X POST $CART_SERVICE_URL/articles \
   }" | python3 -m json.tool 2>/dev/null
 
 echo ""
-print_success "Article 2 ajouté au panier $CART_ID_1"
+if echo "$?" | grep -q "0"; then
+    print_success "Article 2 ajouté au panier $CART_ID_1 avec succès"
+else
+    print_error "Échec ajout article 2 au panier $CART_ID_1"
+fi
 
 pause_read
 

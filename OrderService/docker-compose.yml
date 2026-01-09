@@ -22,15 +22,21 @@ services:
     labels:
       # Activer Traefik pour ce service
       - "traefik.enable=true"
-      # Configuration du routeur HTTP
+      
+      # Router pour /api/orders
       - "traefik.http.routers.order-api.rule=Host(`localhost`) && PathPrefix(`/api/orders`)"
       - "traefik.http.routers.order-api.entrypoints=web"
       - "traefik.http.routers.order-api.service=order-api"
-      # Configuration du service
+      - "traefik.http.routers.order-api.priority=20"
+      
+      # Router pour /api/order-items
+      - "traefik.http.routers.order-items-api.rule=Host(`localhost`) && PathPrefix(`/api/order-items`)"
+      - "traefik.http.routers.order-items-api.entrypoints=web"
+      - "traefik.http.routers.order-items-api.service=order-api"
+      - "traefik.http.routers.order-items-api.priority=10"
+      
+      # Configuration du service (unique pour les deux routers)
       - "traefik.http.services.order-api.loadbalancer.server.port=8080"
-      # Middleware pour strip prefix /api/orders -> /orders
-      - "traefik.http.routers.order-api.middlewares=order-api-stripprefix"
-      - "traefik.http.middlewares.order-api-stripprefix.stripprefix.prefixes=/api"
 
   order-db:
     image: mysql:8.0

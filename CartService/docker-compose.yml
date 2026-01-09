@@ -12,6 +12,7 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=cart_db
+      - USER_SERVICE_URL=http://user-api-dev:3000
     ports:
       - "5001:5020"
     depends_on:
@@ -27,9 +28,9 @@ services:
       - "traefik.http.routers.cart-api.service=cart-api"
       # Configuration du service
       - "traefik.http.services.cart-api.loadbalancer.server.port=5020"
-      # Middleware pour strip prefix /api/cart -> /cart
+      # Middleware pour strip prefix /api/cart -> /
       - "traefik.http.routers.cart-api.middlewares=cart-api-stripprefix"
-      - "traefik.http.middlewares.cart-api-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.middlewares.cart-api-stripprefix.stripprefix.prefixes=/api/cart"
 
   db:
     image: mysql:8.0

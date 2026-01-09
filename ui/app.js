@@ -1,9 +1,8 @@
-// API Configuration
+// API Configuration - Direct access to services (bypassing Traefik temporarily due to CORS issues)
 const API_CONFIG = {
-    // Use Traefik gateway by default, fallback to direct ports
-    userService: 'http://localhost/api',
-    cartService: 'http://localhost:5001',
-    orderService: 'http://localhost:8080'
+    userService: 'http://localhost:3000',       // Direct access to UserService
+    cartService: 'http://localhost:5001',       // Direct access to CartService
+    orderService: 'http://localhost:8080'       // Direct access to OrderService
 };
 
 // State management
@@ -311,7 +310,7 @@ function initOrderForms() {
     // List orders
     document.getElementById('list-orders-btn').addEventListener('click', async () => {
         const userId = document.getElementById('filter-order-user-id').value;
-        let url = `${API_CONFIG.orderService}/orders`;
+        let url = `${API_CONFIG.orderService}/api/orders`;
         
         const params = new URLSearchParams();
         if (userId) {
@@ -341,15 +340,19 @@ function initOrderForms() {
         e.preventDefault();
         
         const userId = document.getElementById('order-user-id').value;
+        const shippingAddress = document.getElementById('order-shipping-address').value;
+        const billingAddress = document.getElementById('order-billing-address').value;
         const status = document.getElementById('order-status').value;
         const totalAmount = document.getElementById('order-total').value;
 
         try {
-            const response = await fetch(`${API_CONFIG.orderService}/orders`, {
+            const response = await fetch(`${API_CONFIG.orderService}/api/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: parseInt(userId),
+                    shippingAddress,
+                    billingAddress,
                     status,
                     totalAmount: parseFloat(totalAmount)
                 })
@@ -378,7 +381,7 @@ function initOrderForms() {
         const unitPrice = document.getElementById('orderitem-price').value;
 
         try {
-            const response = await fetch(`${API_CONFIG.orderService}/order-items`, {
+            const response = await fetch(`${API_CONFIG.orderService}/api/order-items`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

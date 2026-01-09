@@ -45,11 +45,11 @@ export class User {
     default: 1,
     nullable: false,
     name: 'is_active',
-    transformer: {
-      to: (value: boolean | number) =>
-        typeof value === 'boolean' ? booleanToStatus(value) : value,
-      from: (value: number) => statusToBoolean(value),
-    },
+    // transformer: {
+    //   to: (value: boolean | number) =>
+    //     typeof value === 'boolean' ? booleanToStatus(value) : value,
+    //   from: (value: number) => statusToBoolean(value),
+    // },
   })
   isActive: number;
 

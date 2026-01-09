@@ -18,16 +18,14 @@ import { UserStatus } from '../utils/helpers';
  */
 @Injectable()
 export class AuthService {
-  private readonly saltRounds: number;
+  private readonly saltRounds: number = 10;
 
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {
-    this.saltRounds = this.configService.get<number>('BCRYPT_SALT_ROUNDS') || 10;
-  }
+  ) {}
 
   /**
    * Register a new user
@@ -45,7 +43,10 @@ export class AuthService {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(registerDto.password, this.saltRounds);
+    const hashedPassword = await bcrypt.hash(
+      registerDto.password,
+      this.saltRounds,
+    );
 
     // Create user entity
     const user = this.userRepository.create({
@@ -59,7 +60,7 @@ export class AuthService {
     const savedUser = await this.userRepository.save(user);
 
     // Generate JWT token
-    const token = await this.generateToken(savedUser);
+    const token = this.generateToken(savedUser);
 
     return {
       user: {
@@ -103,7 +104,7 @@ export class AuthService {
     }
 
     // Generate JWT token
-    const token = await this.generateToken(user);
+    const token = this.generateToken(user);
 
     return {
       user: {
@@ -121,7 +122,7 @@ export class AuthService {
    * @param user - User entity
    * @returns JWT token
    */
-  private async generateToken(user: User): Promise<string> {
+  private generateToken(user: User): string {
     const payload = {
       sub: user.id,
       email: user.email,
