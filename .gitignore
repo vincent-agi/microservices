@@ -120,3 +120,6 @@ target/
 # Database
 *.sqlite
 *.db
+# Local environment files (use .env.example as a template)
+.env
+!.env.example
